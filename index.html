@@ -1,0 +1,1265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="21.1">
+<meta name="theme-color" content="#f2f5f6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1215" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Road to 21.1</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one phone-width column; sticky title bar on top, four-tab bar fixed at the bottom; session cards are the only raised surfaces. */
+:root {
+  --bg: #f2f5f6; --surface: #ffffff; --sunk: #e8edef; --line: #d9e0e3;
+  --ink: #0f181c; --ink-2: #44525a; --ink-3: #5d6b73;
+  --run: #2a78d6; --gym: #eb6834; --walk: #1baf7a; --rest: #7d8a92;
+  --accent: #2a78d6; --accent-ink: #1c5cab; --accent-wash: #e2eefb; --on-accent: #ffffff;
+  --track: #9ec5f4; --good: #0b8f0b; --good-wash: #e3f4e3; --warn-wash: #fdf1d8; --warn-ink: #6f4a00;
+  --shadow: 0 1px 2px rgba(15, 24, 28, .06), 0 6px 20px rgba(15, 24, 28, .05);
+  --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1215; --surface: #161d21; --sunk: #1e262b; --line: #2a353b;
+    --ink: #eef2f4; --ink-2: #b7c2c8; --ink-3: #93a0a7;
+    --run: #3987e5; --gym: #d95926; --walk: #199e70; --rest: #7d8a92;
+    --accent: #3987e5; --accent-ink: #8dbcf2; --accent-wash: #14273d; --on-accent: #ffffff;
+    --track: #184f95; --good: #2fb52f; --good-wash: #12301a; --warn-wash: #33290f; --warn-ink: #f0cd7c;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1215; --surface: #161d21; --sunk: #1e262b; --line: #2a353b;
+  --ink: #eef2f4; --ink-2: #b7c2c8; --ink-3: #93a0a7;
+  --run: #3987e5; --gym: #d95926; --walk: #199e70; --rest: #7d8a92;
+  --accent: #3987e5; --accent-ink: #8dbcf2; --accent-wash: #14273d; --on-accent: #ffffff;
+  --track: #184f95; --good: #2fb52f; --good-wash: #12301a; --warn-wash: #33290f; --warn-ink: #f0cd7c;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 15px/1.45 var(--body); -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: 0; padding: 0; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+h1, h2, h3, p, ul { margin: 0; }
+ul { padding: 0; list-style: none; }
+a { color: var(--accent-ink); }
+svg.i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+.wrap { max-width: 580px; margin-inline: auto; padding-inline: 16px; }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 48px; }
+.brand { font: 700 20px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
+.brand b { color: var(--accent-ink); font-weight: 700; }
+.where { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-2); min-width: 0; }
+.where span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rest); flex: none; }
+.dot.cloud { background: var(--good); }
+main { padding-block: 16px 104px; display: flex; flex-direction: column; gap: 16px; }
+
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.tabs .wrap { display: grid; grid-template-columns: repeat(4, 1fr); }
+.tabs button { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 0 8px; font-size: 11.5px; font-weight: 500; color: var(--ink-3); }
+.tabs button[aria-current="page"] { color: var(--accent-ink); }
+.tabs button[aria-current="page"] svg { stroke-width: 2.2; }
+
+.eyebrow { font: 600 12px/1.2 var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.daynav { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.daynav h1 { font: 700 38px/1 var(--display); letter-spacing: .01em; text-wrap: balance; }
+.daynav .eyebrow { margin-bottom: 6px; }
+.navbtns { display: flex; gap: 6px; }
+.ib { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-2); }
+.ib:hover { color: var(--ink); border-color: var(--ink-3); }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 99px; background: var(--accent-wash); color: var(--accent-ink); font-size: 12.5px; font-weight: 600; }
+.pill.plain { background: var(--sunk); color: var(--ink-2); }
+
+.strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.strip button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0 7px; border-radius: 12px; border: 1px solid transparent; color: var(--ink-2); min-width: 0; }
+.strip .d { font: 600 11px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.strip .n { font: 600 19px/1 var(--display); font-variant-numeric: tabular-nums; }
+.strip .marks { display: flex; gap: 3px; height: 6px; }
+.strip .marks i { width: 6px; height: 6px; border-radius: 50%; background: var(--rest); }
+.strip .marks i.run { background: var(--run); } .strip .marks i.gym { background: var(--gym); } .strip .marks i.walk { background: var(--walk); }
+.strip .marks i.done { box-shadow: 0 0 0 1.5px var(--bg), 0 0 0 3px var(--good); }
+.strip button.today .n { color: var(--accent-ink); }
+.strip button[aria-pressed="true"] { background: var(--surface); border-color: var(--line); box-shadow: var(--shadow); color: var(--ink); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.card.done { box-shadow: none; }
+.chead { display: flex; align-items: center; gap: 10px; }
+.tile { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+.tile.run { background: color-mix(in srgb, var(--run) 15%, var(--surface)); color: var(--run); }
+.tile.gym { background: color-mix(in srgb, var(--gym) 15%, var(--surface)); color: var(--gym); }
+.tile.walk { background: color-mix(in srgb, var(--walk) 16%, var(--surface)); color: var(--walk); }
+.tile.rest { background: var(--sunk); color: var(--rest); }
+.chead .kind { flex: 1; min-width: 0; }
+.chead h2 { font: 600 17px/1.2 var(--body); text-wrap: balance; }
+.check { height: 36px; padding: 0 12px 0 9px; border-radius: 99px; border: 1px solid var(--line); display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: var(--ink-2); flex: none; }
+.check svg { width: 17px; height: 17px; }
+.check[aria-pressed="true"] { background: var(--good-wash); border-color: transparent; color: var(--good); }
+.big { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
+.big .v { font: 700 52px/.9 var(--display); letter-spacing: -.01em; }
+.big .u { font: 600 17px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin-left: 5px; }
+.big .sub { font-size: 13.5px; color: var(--ink-2); }
+.targets { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px 16px; padding: 12px 14px; background: var(--sunk); border-radius: 12px; }
+.targets div { min-width: 0; }
+.targets dt { font: 600 11.5px/1.2 var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 3px; }
+.targets dd { margin: 0; font-weight: 600; font-size: 14.5px; }
+dl { margin: 0; }
+details.bd > summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--accent-ink); padding: 2px 0; }
+details.bd > summary::-webkit-details-marker { display: none; }
+details.bd > summary svg { transition: transform .15s; }
+details.bd[open] > summary svg { transform: rotate(90deg); }
+.blocks { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+.block .eyebrow { margin-bottom: 7px; }
+.block li { padding: 7px 0; border-top: 1px solid var(--line); font-size: 14.5px; }
+.block li:first-child { border-top: 0; padding-top: 0; }
+.block li.ex { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: baseline; }
+.block li.ex .nm { font-weight: 600; min-width: 0; }
+.block li.ex .st { font: 600 15px/1.2 var(--display); letter-spacing: .03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.block li.ex .ld { grid-column: 1 / -1; font-size: 13.5px; color: var(--ink-2); }
+.notes { font-size: 13.5px; color: var(--ink-2); display: flex; flex-direction: column; gap: 6px; }
+.notes li { padding-left: 14px; position: relative; }
+.notes li::before { content: ""; position: absolute; left: 2px; top: .62em; width: 5px; height: 5px; border-radius: 50%; background: var(--ink-3); }
+.cfoot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; }
+.cfoot a, .link { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--accent-ink); text-decoration: none; font-size: 13px; }
+.cfoot a svg, .link svg { width: 16px; height: 16px; }
+.moved { font-size: 12.5px; color: var(--warn-ink); background: var(--warn-wash); padding: 4px 9px; border-radius: 8px; }
+
+.sec { display: flex; flex-direction: column; gap: 10px; }
+.sechead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.sechead h2 { font: 700 22px/1.1 var(--display); letter-spacing: .02em; text-transform: uppercase; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+.rows > li, .rows > div { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); min-width: 0; }
+.rows > li:first-child, .rows > div:first-child { border-top: 0; padding-top: 2px; }
+.rows > li:last-child, .rows > div:last-child { padding-bottom: 2px; }
+.grow { flex: 1; min-width: 0; }
+.muted { color: var(--ink-2); font-size: 13.5px; }
+.small { font-size: 12.5px; color: var(--ink-3); }
+.num { font: 600 16px/1.2 var(--display); letter-spacing: .03em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.macro { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.macro div { background: var(--sunk); border-radius: 12px; padding: 10px 12px; }
+.macro b { display: block; font: 700 26px/1 var(--display); }
+.macro span { font: 600 11.5px/1.2 var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.flag { font-size: 13.5px; padding: 9px 12px; border-radius: 10px; background: var(--accent-wash); color: var(--ink); }
+.flag.warn { background: var(--warn-wash); color: var(--warn-ink); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 42px; padding: 0 16px; border-radius: 12px; font-weight: 600; font-size: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-decoration: none; }
+.btn.primary { background: var(--accent); border-color: transparent; color: var(--on-accent); }
+.btn.sm { height: 34px; padding: 0 12px; font-size: 13px; border-radius: 10px; }
+.btnrow { display: flex; gap: 8px; flex-wrap: wrap; }
+.weigh { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.weigh input, .times input { height: 42px; width: 104px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); padding: 0 12px; font: 600 18px/1 var(--display); letter-spacing: .03em; }
+
+.wk { display: flex; flex-direction: column; }
+.wkrow { display: grid; grid-template-columns: 46px 1fr auto; gap: 10px; align-items: center; padding: 11px 0; border-top: 1px solid var(--line); }
+.wkrow:first-child { border-top: 0; }
+.wkrow .dt { text-align: left; }
+.wkrow .dt .d { font: 600 11px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); display: block; margin-bottom: 3px; }
+.wkrow .dt .n { font: 700 24px/1 var(--display); }
+.wkrow.today .dt .n { color: var(--accent-ink); }
+.wkrow .open { text-align: left; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.chip { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 500; min-width: 0; }
+.chip i { width: 9px; height: 9px; border-radius: 3px; background: var(--rest); flex: none; }
+.chip i.run { background: var(--run); } .chip i.gym { background: var(--gym); } .chip i.walk { background: var(--walk); }
+.chip.done { color: var(--ink-3); text-decoration: line-through; }
+.chip svg { width: 15px; height: 15px; color: var(--good); }
+.wkrow.picked { background: var(--accent-wash); margin-inline: -16px; padding-inline: 16px; }
+.banner { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-radius: 12px; background: var(--accent-wash); font-size: 13.5px; font-weight: 500; }
+.meter { height: 8px; border-radius: 99px; background: var(--sunk); overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--sunk); border-radius: 12px; padding: 3px; }
+.seg button { height: 36px; border-radius: 9px; font-size: 13.5px; font-weight: 600; color: var(--ink-2); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.meal h3 { font: 600 15.5px/1.25 var(--body); }
+.meal .items { margin-top: 8px; font-size: 14px; color: var(--ink-2); display: flex; flex-direction: column; gap: 4px; }
+.meal .how { margin-top: 8px; font-size: 13.5px; }
+.meal .portion { margin-top: 8px; font-size: 13.5px; font-weight: 600; }
+.groc label { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.groc label:first-of-type { border-top: 0; }
+.groc input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--accent); flex: none; }
+.groc input:checked + .grow .gn { text-decoration: line-through; color: var(--ink-3); }
+.groc .gn { font-weight: 600; font-size: 14.5px; }
+.groc .gg { font: 600 12px/1.2 var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); padding: 14px 0 4px; }
+.groc .gg:first-child { padding-top: 0; }
+.prose { display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; max-width: 65ch; }
+.prose li { padding-left: 14px; position: relative; }
+.prose li::before { content: ""; position: absolute; left: 2px; top: .62em; width: 5px; height: 5px; border-radius: 50%; background: var(--ink-3); }
+
+.phase { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; padding: 12px 0; border-top: 1px solid var(--line); }
+.phase:first-child { border-top: 0; padding-top: 2px; }
+.phase .n { font: 700 24px/1 var(--display); color: var(--ink-3); width: 22px; }
+.phase.now .n { color: var(--accent-ink); }
+.phase h3 { font: 600 15.5px/1.2 var(--body); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.phase p { grid-column: 2; font-size: 13.5px; color: var(--ink-2); }
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font: 500 11px var(--body); fill: var(--ink-3); }
+.chart .grid { stroke: var(--line); stroke-width: 1; }
+.chart .bar { fill: var(--track); } .chart .bar.dn { fill: var(--accent); }
+.chart .hit { fill: transparent; cursor: pointer; }
+.chart g.b { pointer-events: none; }
+.chart .hit:hover + g .bar, .chart .hit:focus + g .bar { opacity: .8; }
+.chart .lbl { fill: var(--ink); font-weight: 600; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); margin-bottom: 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 12px; height: 10px; border-radius: 3px; background: var(--track); }
+.legend i.dn { background: var(--accent); }
+.legend i.ln { height: 2px; border-radius: 1px; background: var(--accent); width: 16px; }
+.legend i.tg { height: 2px; border-radius: 1px; background: var(--ink-3); width: 16px; }
+#tip { position: fixed; z-index: 60; pointer-events: none; background: var(--ink); color: var(--bg); padding: 7px 10px; border-radius: 9px; font-size: 12.5px; line-height: 1.35; max-width: 220px; box-shadow: 0 6px 20px rgba(0, 0, 0, .25); }
+#tip b { display: block; font-size: 14px; }
+table.tv { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+table.tv th, table.tv td { text-align: left; padding: 6px 8px 6px 0; border-top: 1px solid var(--line); }
+table.tv th { font: 600 11.5px/1.2 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); border-top: 0; }
+.scroll { overflow-x: auto; }
+.zones { display: grid; grid-template-columns: 30fr 31fr 16fr 16fr 9fr; gap: 2px; border-radius: 8px; overflow: hidden; }
+.zones i { height: 10px; background: var(--accent); }
+.zones i:nth-child(1) { opacity: .22; } .zones i:nth-child(2) { opacity: .42; } .zones i:nth-child(3) { opacity: .62; } .zones i:nth-child(4) { opacity: .82; }
+
+.scrim { position: fixed; inset: 0; z-index: 40; background: rgba(8, 12, 14, .5); display: flex; align-items: flex-end; justify-content: center; }
+.sheet { width: 100%; max-width: 580px; max-height: 88%; overflow-y: auto; background: var(--surface); border-radius: 22px 22px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
+.sheet h2 { font: 700 24px/1 var(--display); letter-spacing: .02em; text-transform: uppercase; }
+.shead { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal .h { text-align: center; font: 600 11px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); padding: 4px 0 6px; }
+.cal button { aspect-ratio: 1 / 1; max-width: 100%; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font: 600 17px/1 var(--display); font-variant-numeric: tabular-nums; }
+.cal button.off { color: var(--ink-3); font-weight: 500; }
+.cal button.in { background: var(--sunk); }
+.cal button.today { box-shadow: inset 0 0 0 2px var(--accent); }
+.cal button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+.cal .marks { display: flex; gap: 2px; height: 5px; }
+.cal .marks i { width: 5px; height: 5px; border-radius: 50%; background: var(--rest); }
+.cal .marks i.run { background: var(--run); } .cal .marks i.gym { background: var(--gym); } .cal .marks i.walk { background: var(--walk); }
+.cal button[aria-pressed="true"] .marks i { background: var(--on-accent); }
+.times { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; font-size: 14.5px; }
+.times input { width: 122px; font-size: 17px; }
+#toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); z-index: 70; background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 13.5px; font-weight: 500; max-width: calc(100% - 32px); text-align: center; }
+.empty { text-align: center; padding: 28px 12px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media (min-width: 720px) { .daynav h1 { font-size: 46px; } main { padding-top: 24px; } }
+</style>
+<header class="top"><div class="wrap"><div class="brand">Road to <b>21.1</b></div><div class="where" id="where"></div></div></header>
+<main class="wrap" id="view"></main>
+<nav class="tabs" aria-label="Sections"><div class="wrap" id="tabs"></div></nav>
+<div id="sheetHost"></div>
+<div id="tip" hidden></div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<script>
+'use strict';
+/* ---------- Program data and pure helpers (no DOM) ---------- */
+const START = '2026-10-12';
+const WEEKS = 16;
+const TZID = 'Asia/Hong_Kong';
+
+const pad = n => String(n).padStart(2, '0');
+const toYmd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const fromYmd = s => { const a = s.split('-').map(Number); return new Date(a[0], a[1] - 1, a[2]); };
+const addDays = (s, n) => { const d = fromYmd(s); d.setDate(d.getDate() + n); return toYmd(d); };
+const diffDays = (a, b) => Math.round((fromYmd(a) - fromYmd(b)) / 864e5);
+const mondayOf = s => addDays(s, -((fromYmd(s).getDay() + 6) % 7));
+const END = addDays(START, WEEKS * 7 - 1);
+const weekOf = s => { const n = Math.floor(diffDays(s, START) / 7) + 1; return n >= 1 && n <= WEEKS ? n : 0; };
+const weekStart = n => addDays(START, (n - 1) * 7);
+
+const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DOW_LONG = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MON_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const fmtShort = s => { const d = fromYmd(s); return DOW[d.getDay()] + ' ' + d.getDate() + ' ' + MON[d.getMonth()]; };
+const fmtDM = s => { const d = fromYmd(s); return d.getDate() + ' ' + MON[d.getMonth()]; };
+const fmtRange = (a, b) => { const x = fromYmd(a), y = fromYmd(b); return x.getMonth() === y.getMonth() ? x.getDate() + '–' + y.getDate() + ' ' + MON[y.getMonth()] : fmtDM(a) + ' – ' + fmtDM(b); };
+
+const PHASES = [
+  { id: 'base', name: 'Base', from: 1, to: 3, easy: '6:20–7:00', long: '7 → 10 km',
+    focus: 'Build the habit: three, then four easy runs a week. Every run stays under 165 bpm, even when late-morning heat makes that feel slow.' },
+  { id: 'build', name: 'Build', from: 4, to: 7, easy: '6:00–6:30', long: '12 → 16 km',
+    focus: 'The long run grows to 10 miles. One steady session a week at half-marathon effort.' },
+  { id: 'speed', name: 'Speed', from: 8, to: 11, easy: '5:50–6:20', long: '12 → 16 km',
+    focus: '400 m and 1 km repeats bring back 4:30/km. 5K time trial on 25 December.' },
+  { id: 'half', name: 'Half build', from: 12, to: 15, easy: '5:45–6:15', long: '16 → 20 km',
+    focus: 'The long run reaches 20 km. Tempo work at half-marathon pace, 5:20–5:30/km.' },
+  { id: 'taper', name: 'Taper and half', from: 16, to: 16, easy: '5:45–6:15', long: '21.1 km',
+    focus: 'Volume drops and the legs freshen, then 21.1 km on Sunday 31 January.' },
+];
+const phaseOf = n => PHASES.find(p => n >= p.from && n <= p.to) || null;
+
+const HR_ZONES = [
+  { z: 'Z1', lo: 0, hi: 130, use: 'Walking, warm-up' },
+  { z: 'Z2', lo: 131, hi: 162, use: 'Easy and long runs' },
+  { z: 'Z3', lo: 163, hi: 178, use: 'Steady, half-marathon effort' },
+  { z: 'Z4', lo: 179, hi: 194, use: '1 km repeats, 5K effort' },
+  { z: 'Z5', lo: 195, hi: 203, use: 'Final sprint only' },
+];
+
+/* ---------- session builders ---------- */
+const paceMid = r => { const m = r.split('–').map(x => { const a = x.split(':').map(Number); return a[0] + a[1] / 60; }); return (m[0] + m[1]) / 2; };
+const WU_EASY = ['5 min brisk walk, then leg swings and ankle circles', 'Run the first kilometre slower than the rest'];
+const CD = ['5 min walk', 'Calves, hips and quads: 30 s each side'];
+const WU_HARD = km => [km + ' km easy jog', 'Leg swings, then 4 × 20 s strides with a walk back'];
+
+function easyRun(km, p, o) {
+  o = o || {};
+  const main = [km + ' km easy with heart rate under 165', 'If it passes 170, walk 60 s and restart slower'];
+  if (o.strides) main.push(o.strides + ' × 20 s strides to finish: fast but relaxed, walk back between');
+  return { type: 'run', kind: 'easy', title: o.title || 'Easy run', km, mins: Math.round(km * paceMid(p.easy)) + (o.strides ? 4 : 0) + 10,
+    target: { pace: p.easy + ' /km', hr: 'Under 165 bpm', effort: 'You can speak in full sentences' },
+    blocks: [{ label: 'Warm-up', lines: WU_EASY }, { label: 'Main set', lines: main }, { label: 'Cool-down', lines: CD }],
+    notes: o.notes || [], kcal: Math.round(km * 72) };
+}
+function longRun(km, p, o) {
+  o = o || {};
+  const main = [];
+  if (o.finish) {
+    main.push((km - o.finish) + ' km easy with heart rate under 165');
+    main.push('Last ' + o.finish + ' km at ' + o.finishAt);
+  } else main.push(km + ' km easy with heart rate under 165');
+  main.push('Walk 60 s whenever heart rate passes 172, then carry on');
+  const notes = [o.hot
+    ? 'Route: Bowen Road while late mornings are still hot. It is flat, shaded and about 4 km end to end, so run it out and back. The harbourfront has almost no shade before noon.'
+    : 'Route: east along the harbourfront from Sun Yat Sen Memorial Park past Central Piers, Tamar and Wan Chai. Turn around at half distance. Bowen Road is the flat, shaded alternative.'];
+  if (km >= 14) notes.push('Carry 500 mL Pocari Sweat and sip from 30 minutes in.');
+  else if (km >= 10 || o.hot) notes.push('Carry water. Drink at the turnaround.');
+  if (o.notes) notes.push.apply(notes, o.notes);
+  return { type: 'run', kind: 'long', title: o.title || 'Long run', km, mins: Math.round(km * paceMid(p.easy)) + 10,
+    target: { pace: p.easy + ' /km', hr: 'Under 165 bpm', effort: 'Comfortable all the way; finish feeling you could add 2 km' },
+    blocks: [{ label: 'Warm-up', lines: WU_EASY }, { label: 'Main set', lines: main }, { label: 'Cool-down', lines: CD.concat(['Eat meal 2 within an hour']) }],
+    notes, kcal: Math.round(km * 72) };
+}
+function quality(title, km, mins, target, wu, main, cdKm, notes) {
+  return { type: 'run', kind: 'quality', title, km, mins,
+    target, blocks: [{ label: 'Warm-up', lines: WU_HARD(wu) }, { label: 'Main set', lines: main }, { label: 'Cool-down', lines: [cdKm + ' km very easy jog', 'Calves, hips and quads: 30 s each side'] }],
+    notes: notes || [], kcal: Math.round(km * 72) };
+}
+const steady = (segs, total, p) => quality('Steady run', total, Math.round(total * 5.9) + 6,
+  { pace: '5:30–5:50 /km', hr: '170–180 bpm', effort: 'Half-marathon effort: short phrases only' },
+  2, [segs, 'Hold the effort even; do not chase pace in the heat'], 1.5,
+  ['If heart rate passes 183, ease off until it settles.']);
+const reps400 = n => quality(n + ' × 400 m', 8, 50,
+  { pace: '1:44–1:48 per 400 m (4:20–4:30 /km)', hr: 'Reaches 185–192 by the last reps', effort: 'Fast and smooth, never a sprint' },
+  2, [n + ' × 400 m at 1:44–1:48', '200 m slow jog between reps (about 90 s)', 'Use the flat promenade stretch by Sun Yat Sen Memorial Park'], 1.4,
+  ['Stop the set if a rep is slower than 1:52. That is the session done.']);
+const reps1k = (n, pace, total) => quality(n + ' × 1 km', total, Math.round(total * 5.6) + 6,
+  { pace: pace + ' /km', hr: '180–192 bpm on the reps', effort: '5K to 10K effort: controlled and hard' },
+  2, [n + ' × 1 km at ' + pace + ' /km', '2 min walk-jog between reps', 'Aim for the same split every rep'], 1.2,
+  ['The target is even splits. If the last rep is your fastest, start faster next week.']);
+const tempo = (segs, total) => quality('Half-pace tempo', total, Math.round(total * 5.6) + 6,
+  { pace: '5:20–5:30 /km', hr: '172–182 bpm', effort: 'Goal half-marathon pace: steady and controlled' },
+  2, [segs, 'Lock into pace within the first 500 m and hold it'], 1.5,
+  ['This is rehearsal for 31 January. Practise the pace until it feels automatic.']);
+const hrCheck = n => ({ type: 'run', kind: 'test', title: 'Heart-rate check: 5 km at 5:00/km', km: 7.5, mins: 48,
+  target: { pace: '5:00 /km, even', hr: 'Record the average', effort: 'Hold the pace exactly; the heart rate is the result' },
+  blocks: [{ label: 'Warm-up', lines: WU_HARD(1.5) },
+    { label: 'Main set', lines: ['5 km at exactly 5:00 /km (25:00)', 'Press lap at the start and end so the watch gives the average heart rate for the 5 km alone'] },
+    { label: 'Cool-down', lines: ['1 km very easy jog', 'Write the average heart rate in your Strava note'] }],
+  notes: [n === 1 ? 'Baseline. Expect an average near 180–185 bpm today.' : 'Goal: an average of 178 bpm or lower, which puts 5:00/km in Zone 3.'], kcal: 540 });
+const timeTrial = () => ({ type: 'run', kind: 'test', title: '5K time trial', km: 8.5, mins: 52,
+  target: { pace: '4:30–4:40 /km', hr: 'Climbs to 195+', effort: 'All you have, spread evenly' },
+  blocks: [{ label: 'Warm-up', lines: WU_HARD(2) },
+    { label: 'Main set', lines: ['5 km all-out on the promenade', 'First kilometre no faster than 4:35. On 10 October you opened at 4:28 and faded to 5:13', 'Kilometres 2–4 hold pace, then empty the tank in the last one'] },
+    { label: 'Cool-down', lines: ['1.5 km very easy jog', 'Calves, hips and quads: 30 s each side'] }],
+  notes: ['Target 23:00 or faster. Stretch target 22:30, which matches your best.', 'Have the top-up 30–60 minutes before. Nothing heavier.'], kcal: 612 });
+const race = () => ({ type: 'run', kind: 'race', title: 'Half marathon', km: 21.1, mins: 118,
+  target: { pace: '5:20–5:35 /km for a 1:53–1:58 finish', hr: '170–180 bpm until 16 km', effort: 'Patient for 16 km, then race the last 5' },
+  blocks: [{ label: 'Before', lines: ['Wake 2.5 hours early. Eat meal 1 (the oats, with banana), then sip 500 mL water', '10 min easy jog and 3 strides'] },
+    { label: 'The run', lines: ['Kilometres 1–5 at 5:35 /km. It should feel too easy', 'Kilometres 6–16 at 5:25–5:30 /km', 'Kilometres 17–21.1: whatever is left', 'Pocari Sweat: a few mouthfuls every 20 minutes from 30 min in'] },
+    { label: 'After', lines: ['10 min walk', 'Milk and meal 2 within the hour'] }],
+  notes: ['Route: harbourfront out and back, twice. Start by 07:00 while it is cool and quiet.', 'If this is a class Sunday, swap it with Friday in the Week view.'], kcal: 1520 });
+
+const sqLadder = n => n <= 2 ? '50 / 60 / 70 / 70 kg' : n <= 7 ? '60 / 70 / 80 / 80 kg' : n <= 11 ? '60 / 70 / 80 / 85 kg' : n <= 13 ? '60 / 70 / 80 / 80 kg' : '60 / 70 / 80 kg';
+const sqSets = n => n >= 14 ? '3 × 12' : '4 × 12';
+const step = (n, arr) => arr[n <= 3 ? 0 : n <= 7 ? 1 : n <= 11 ? 2 : 3];
+const GYM_NOTE = 'Add 2.5 kg once all four sets reach 12 clean reps. Loads come from your Strava notes; use the nearest plate or stack setting.';
+
+function push(n, o) {
+  o = o || {};
+  const main = [];
+  if (!o.light) main.push(['Back squat', sqSets(n), sqLadder(n)]);
+  main.push(['Bench press', '4 × 12', step(n, ['40', '42.5', '45', '47.5']) + ' kg']);
+  main.push(['Military press', '4 × 12', step(n, ['25', '27.5', '27.5', '30']) + ' kg']);
+  main.push(['Incline dumbbell bench press', '4 × 12', step(n, ['12.5', '15', '15', '17.5']) + ' kg each']);
+  main.push(['Lateral raise + cable chest fly', '4 × 12 superset', step(n, ['5 kg / 20 lb', '5 kg / 20 lb', '7.5 kg / 25 lb', '7.5 kg / 25 lb'])]);
+  main.push(['Seated dumbbell triceps extension', '4 × 12', step(n, ['15', '17.5', '17.5', '20']) + ' kg']);
+  const notes = [GYM_NOTE];
+  if (o.light) notes.unshift('Race week: no squats, and stop every set 3 reps short.');
+  else if (n >= 12) notes.unshift('Squat load holds through the half build. Keep the reps crisp.');
+  return { type: 'gym', kind: 'push', title: 'Push', mins: o.light ? 45 : 60,
+    target: { load: 'Last 2 reps of each set should be hard', effort: '60–90 s rest between sets' },
+    blocks: [{ label: 'Warm-up', lines: ['5 min bike or rower', '1 × 12 squat and press with the empty bar'] }, { label: 'Main set', lines: main }, { label: 'Cool-down', lines: ['Chest, shoulder and hip-flexor stretch: 30 s each'] }],
+    notes, kcal: o.light ? 160 : 220 };
+}
+function pull(n, o) {
+  o = o || {};
+  const main = [];
+  if (!o.noDead) main.push(['Deadlift', sqSets(n), sqLadder(n)]);
+  main.push(['Pull-ups', '4 sets', 'Stop 1–2 reps before failure']);
+  main.push(['Lat pulldown', '4 × 12', step(n, ['50', '50', '55', '55']) + ' kg']);
+  main.push(['Pendlay row', '4 × 12', step(n, ['50', '55', '60', '60']) + ' kg']);
+  main.push(['Single-arm dumbbell row', '4 × 12 each', step(n, ['20', '22.5', '25', '25']) + ' kg']);
+  main.push(['Barbell curl', '4 × 12', step(n, ['20', '20', '22.5', '22.5']) + ' kg']);
+  const notes = [GYM_NOTE];
+  if (o.noDead) notes.unshift(o.why || 'No deadlifts today.');
+  return { type: 'gym', kind: 'pull', title: 'Pull', mins: o.noDead ? 50 : 60,
+    target: { load: 'Last 2 reps of each set should be hard', effort: '60–90 s rest between sets' },
+    blocks: [{ label: 'Warm-up', lines: ['5 min rower', '1 × 12 deadlift with the empty bar, 1 × 10 scapular pull-ups'] }, { label: 'Main set', lines: main }, { label: 'Cool-down', lines: ['Lats, hamstrings and forearms: 30 s each'] }],
+    notes, kcal: o.noDead ? 180 : 220 };
+}
+function core(n, o) {
+  o = o || {};
+  if (o.light) return { type: 'gym', kind: 'core', title: 'Core, light', mins: 20,
+    target: { load: 'Activation only', effort: 'Nothing to failure' },
+    blocks: [{ label: 'Main set', lines: [['Resistance band trunk rotation', '2 × 15 each', 'Light band'], ['Captain\u2019s chair leg raise', '2 × 10', 'Bodyweight'], ['Side plank', '2 × 30 s each', 'Bodyweight'], ['Single-leg calf raise', '2 × 12 each', 'Bodyweight']] }],
+    notes: ['The half is tomorrow. Leave the gym fresher than you arrived.'], kcal: 70 };
+  const main = [
+    ['Sidestep medicine ball toss', '4 × 6 each', '6 kg'],
+    ['Dumbbell wood chop', '4 × 12 each', step(n, ['15', '15', '17.5', '17.5']) + ' kg'],
+    ['Captain\u2019s chair leg raise', '4 × ' + (n <= 7 ? '12' : '15'), 'Bodyweight'],
+    ['Resistance band trunk rotation', '4 × 15 each', 'Thick band'],
+    ['Hanging leg raise', '3 sets', '10–15 reps'],
+  ];
+  const knee = [
+    ['Tiptoe squat', '2 × 15', 'Bodyweight'],
+    ['Single-leg calf raise', '3 × 15 each', 'Last set with a bent knee'],
+    ['Dumbbell lunge raise', '2 × 10 each', '10 kg each'],
+  ];
+  const fin = n >= 13 && n <= 15
+    ? ['4 rounds: 1 min mini crunches, 1 min Russian twists, 1 min plank, 1 min rest']
+    : ['4 rounds: 1 min mini crunches, 1 min Russian twists, 1 min half burpees, 1 min rest'];
+  return { type: 'gym', kind: 'core', title: 'Core', mins: 55,
+    target: { load: 'Controlled reps, full range', effort: '45–60 s rest between sets' },
+    blocks: [{ label: 'Main set', lines: main }, { label: 'Knee and calf block', lines: knee }, { label: 'Finisher', lines: fin }],
+    notes: ['The knee and calf block is the part that protects your running. Do it even on a short day.'], kcal: 200 };
+}
+const walk = m => ({ type: 'walk', kind: 'incline', title: 'Incline walk', mins: m, km: +(m / 10).toFixed(1),
+  target: { pace: '15% at 6.0 km/h', hr: '150–170 bpm', effort: 'Hands off the rails' },
+  blocks: [{ label: 'Warm-up', lines: ['2 min at 8% and 5 km/h'] }, { label: 'Main set', lines: [m + ' min at 15% and 6.0 km/h', 'If heart rate passes 172, drop to 5.5 km/h'] }, { label: 'Cool-down', lines: ['2 min flat at 4.5 km/h', 'Calf stretch: 30 s each side'] }],
+  notes: ['Straight after lifting, as you have always done it. This is low-impact aerobic work that spares your knee.'], kcal: Math.round(m * 9.5) });
+const rest = (title, lines, notes) => ({ type: 'rest', kind: 'rest', title: title || 'Rest day', mins: 0,
+  target: null, blocks: [{ label: 'Today', lines: lines || ['No training', 'A 20–30 min easy walk is fine', 'Sleep is the session: aim for 8 hours'] }],
+  notes: notes || ['Free Sunday? A hike fits here every week or two. If you hike, skip Saturday\u2019s short run that week and keep the pace social.'], kcal: 0 });
+
+/* ---------- the 16 weeks ---------- */
+function buildWeek(n) {
+  const p = phaseOf(n);
+  const W = n === 16 ? 30 : (n === 8 || n === 11) ? 50 : 40;
+  const d = { mon: [push(n), walk(W)], wed: [pull(n), walk(W)], sun: [rest()] };
+  const E = (km, o) => easyRun(km, p, o), L = (km, o) => longRun(km, p, Object.assign({ hot: n <= 6 }, o));
+  const sat = km => [core(n), E(km, { title: 'Short easy run', notes: ['Run after the core session, or later in the day.'] })];
+  switch (n) {
+    case 1: d.tue = [E(5, { notes: ['First run back after Saturday\u2019s hard 5K. Slow is the point.'] })]; d.thu = [E(5, { strides: 4 })]; d.fri = [L(7)]; d.sat = [core(n)]; break;
+    case 2: d.tue = [E(5, { strides: 4 })]; d.thu = [E(5)]; d.fri = [L(8.5)]; d.sat = sat(3); break;
+    case 3: d.tue = [E(6, { strides: 6 })]; d.thu = [E(5)]; d.fri = [L(10, { notes: ['Checkpoint: 10 km is back.'] })]; d.sat = sat(4); break;
+    case 4: d.tue = [steady('3 km steady at 170–180 bpm', 6.5, p)]; d.thu = [E(6)]; d.fri = [L(12)]; d.sat = sat(4); break;
+    case 5: d.tue = [steady('4 km steady at 170–180 bpm', 7.5, p)]; d.thu = [E(6)]; d.fri = [L(14)]; d.sat = sat(4); break;
+    case 6: d.tue = [hrCheck(1)]; d.thu = [E(5)]; d.fri = [L(11, { notes: ['Cutback week. Shorter on purpose so next Friday\u2019s 10 miles lands well.'] })]; d.sat = sat(4); break;
+    case 7: d.tue = [steady('2 × 3 km steady at 170–180 bpm, 2 min walk-jog between', 9.5, p)]; d.thu = [E(6)]; d.fri = [L(16.1, { title: 'Long run: 10 miles', notes: ['Checkpoint: 10 miles. Last December you ran this at 4:54/km; today is about finishing fresh.'] })]; d.sat = sat(4); break;
+    case 8: d.tue = [reps400(8)]; d.thu = [E(6)]; d.fri = [L(12)]; d.sat = sat(4); break;
+    case 9: d.tue = [reps1k(5, '4:35–4:40', 9.5)]; d.thu = [E(6, { strides: 4 })]; d.fri = [L(14, { finish: 3, finishAt: '5:30–5:45 /km (steady)' })]; d.sat = sat(5); break;
+    case 10: d.tue = [reps1k(6, '4:30–4:35', 10.5)]; d.thu = [E(6, { strides: 4 })]; d.fri = [L(16)]; d.sat = sat(5); break;
+    case 11: d.tue = [L(12, { title: 'Midweek long run', notes: ['Moved to Tuesday so Friday\u2019s time trial gets fresh legs.'] })]; d.thu = [E(5, { strides: 4, notes: ['Keep it short and easy. The time trial is tomorrow.'] })]; d.fri = [timeTrial()]; d.sat = sat(4); break;
+    case 12:
+      d.tue = [tempo('5 km at 5:20–5:30 /km', 8.5)];
+      d.wed = [pull(n, { noDead: true, why: 'No deadlifts: the long run is tomorrow.' }), walk(W)];
+      d.thu = [L(16, { notes: ['Thursday this week, so New Year\u2019s Day stays free.'] })];
+      d.fri = [rest('Rest day', ['New Year\u2019s Day: no training', 'A 20–30 min easy walk is fine'], ['The long run moved to Thursday. Sunday carries an extra easy run.'])];
+      d.sat = sat(5); d.sun = [E(6, { notes: ['Replaces the usual Sunday rest, because Friday was off.'] })]; break;
+    case 13: d.tue = [tempo('3 × 2 km at 5:20–5:30 /km, 2 min walk-jog between', 10)]; d.thu = [E(6)]; d.fri = [L(18)]; d.sat = sat(5); break;
+    case 14: d.tue = [tempo('6 km at 5:20–5:30 /km', 9.5)]; d.thu = [E(7)]; d.fri = [L(20, { finish: 4, finishAt: '5:20–5:30 /km (half pace)', notes: ['Checkpoint: 20 km. The biggest run of the plan.', 'Practise race fuelling: Pocari every 20 minutes.'] })]; d.sat = sat(4); break;
+    case 15: d.tue = [hrCheck(2)]; d.thu = [E(6, { strides: 4 })]; d.fri = [L(12, { notes: ['Taper has started. Resist adding distance.'] })]; d.sat = sat(4); break;
+    case 16:
+      d.mon = [push(n, { light: true }), walk(W)];
+      d.tue = [quality('Race-pace sharpener', 6.5, 40, { pace: '5:20–5:30 /km on the reps', hr: '172–182 bpm on the reps', effort: 'Smooth; finish wanting more' }, 2, ['3 × 1 km at 5:20–5:30 /km', '90 s walk-jog between reps'], 1, ['Last hard running before Sunday.'])];
+      d.wed = [pull(n, { noDead: true, why: 'Race week: no deadlifts, and stop every set 3 reps short.' }), walk(W)];
+      d.thu = [E(4, { strides: 4 })];
+      d.fri = [rest('Rest day', ['No training', 'Eat normally, with an extra half pack of noodles at dinner', 'Lay out kit, shoes and Pocari for Sunday'], ['Two days out. Rest is the work.'])];
+      d.sat = [core(n, { light: true }), E(3, { title: 'Shakeout run', strides: 3, notes: ['Loosen the legs. Nothing more.'] })];
+      d.sun = [race()]; break;
+  }
+  return [d.mon, d.tue, d.wed, d.thu, d.fri, d.sat, d.sun];
+}
+
+const PROGRAM = {};
+(function () {
+  for (let n = 1; n <= WEEKS; n++) {
+    const days = buildWeek(n), ws = weekStart(n);
+    days.forEach((list, i) => {
+      const date = addDays(ws, i);
+      list.forEach((s, j) => { s.id = date + ':' + j; s.origin = date; });
+      PROGRAM[date] = list;
+    });
+  }
+})();
+
+const weekKm = n => { let t = 0; for (let i = 0; i < 7; i++) (PROGRAM[addDays(weekStart(n), i)] || []).forEach(s => { if (s.type === 'run') t += s.km; }); return Math.round(t * 10) / 10; };
+
+const BENCHMARKS = [
+  { date: '2026-10-23', label: '8.5 km without stopping', goal: 'Heart rate under 165 throughout' },
+  { date: '2026-10-30', label: '10 km long run', goal: 'Your first 10K since the March runs in Shanghai' },
+  { date: '2026-11-17', label: '5 km at 5:00/km: heart-rate check 1', goal: 'Baseline, likely 180–185 bpm' },
+  { date: '2026-11-27', label: '10 miles', goal: 'Finish feeling you could add 2 km' },
+  { date: '2026-12-25', label: '5K time trial', goal: '23:00 or faster; stretch 22:30' },
+  { date: '2027-01-15', label: '20 km long run', goal: 'Last 4 km at half pace' },
+  { date: '2027-01-19', label: '5 km at 5:00/km: heart-rate check 2', goal: 'Average 178 bpm or lower (Zone 3)' },
+  { date: '2027-01-31', label: 'Half marathon', goal: 'Under 1:58; stretch 1:53' },
+];
+const WEIGHT_START = 72.5, WEIGHT_GOAL = 68.5;
+const weightTarget = date => { const t = Math.max(0, Math.min(1, diffDays(date, START) / diffDays(END, START))); return Math.round((WEIGHT_START + (WEIGHT_GOAL - WEIGHT_START) * t) * 10) / 10; };
+
+/* ---------- nutrition ---------- */
+/* Two meals a day inside a 12:00–20:00 window, no rice. Portions scale by tier: [rest, training, big]. */
+const TIERS = {
+  rest: { name: 'Rest day', kcal: 2000, p: 130, c: 200, f: 75, note: 'Smaller carb portions. Protein stays about the same every day.' },
+  standard: { name: 'Training day', kcal: 2400, p: 130, c: 290, f: 80, note: 'Standard portions.' },
+  big: { name: 'Big day', kcal: 2850, p: 135, c: 390, f: 85, note: 'Largest carb portions, plus the pre-run top-up and milk afterwards.' },
+};
+const TIER_IX = { rest: 0, standard: 1, big: 2 };
+const dayLoad = list => list.reduce((t, s) => t + (s.kcal || 0), 0);
+const dayTier = list => { const k = dayLoad(list); return k >= 800 ? 'big' : k >= 250 ? 'standard' : 'rest'; };
+const needsTopUp = list => list.some(s => s.type === 'run' && (s.kind === 'quality' || s.kind === 'test' || (s.kind === 'long' && s.km >= 12)));
+const needsShake = list => list.some(s => s.type === 'gym' || (s.type === 'run' && (s.kind === 'quality' || s.kind === 'test' || s.kind === 'race' || (s.kind === 'long' && s.km >= 12))));
+const needsMilk = list => list.some(s => s.type === 'run' && (s.kind === 'race' || (s.kind === 'long' && s.km >= 12)));
+const isRaceDay = list => list.some(s => s.kind === 'race');
+const fastOk = list => !isRaceDay(list);
+
+/* per unit (count foods) or per gram/mL (unit 'g' or 'mL'): [kcal, protein g] */
+const FOOD = {
+  muffin: [130, 5], egg: [75, 6.3], ham: [22, 3.5], cheese: [65, 4], tomato: [22, 1], lettuce: [5, 0.3], banana: [100, 1.2],
+  milk: [0.44, 0.035], oats: [3.8, 0.13], pb: [6, 0.25], yoghurt: [0.63, 0.048], raisins: [3, 0.03], honey: [21, 0],
+  udon: [270, 7], thigh: [1.2, 0.19], broccoli: [60, 5], oilT: [120, 0], oilt: [40, 0], soy: [10, 1], pangasius: [215, 36],
+  potato: [0.77, 0.02], pepperSauce: [30, 0.5], shrimp: [0.9, 0.18], riceStick: [3.6, 0.06], veg: [0.6, 0.03], oyster: [20, 0.5],
+  tofuHard: [1.2, 0.12], peas: [0.8, 0.055], chiliBean: [25, 1], noodles: [3.5, 0.11], salmon: [2.0, 0.2], kimchi: [0.2, 0.01],
+  tofuSilk: [0.55, 0.05], tuna185: [150, 33], broth: [0.05, 0.01], dumpling: [40, 1.6], spaghetti: [3.55, 0.13], creamCheese: [2.5, 0.06],
+  smoked: [1.2, 0.2], shake: [120, 24], ketchup: [20, 0.2], sugar: [16, 0], cabbage: [0.15, 0.012], free: [0, 0],
+};
+/* items: [food, qty | [rest, training, big], text]. In text, {q} is the quantity. */
+const MEALS = {
+  muffins: { name: 'Ham, egg and cheese muffins', mins: 8, how: 'Your usual sandwich, scaled up to carry half the day: toast the muffins, fry or scramble the eggs, stack with ham, cheese and salad.',
+    items: [['muffin', [3, 3, 4], '{q} Garden English Muffins, toasted'], ['egg', [3, 4, 4], '{q} eggs, fried or scrambled'], ['ham', 3, '{q} slices Maid Brand Sliced Sandwich Ham'], ['cheese', [1, 2, 2], '{q} Chesdale Cheddar slices'], ['tomato', 1, 'Tomato slices'], ['lettuce', 1, 'Lettuce'], ['banana', 1, '{q} banana'], ['milk', 250, '{q} mL Kowloon Dairy Slimilk']] },
+  oats: { name: 'Peanut butter banana oats with boiled eggs', mins: 6, how: 'Microwave oats and milk 2 min, stir, 1 more min. Top with banana and peanut butter. Boil the eggs for 8 minutes while it cooks, or boil 6 at once and keep them in the fridge.',
+    items: [['oats', [100, 120, 140], '{q} g Select Whole Rolled Oats'], ['milk', 300, '{q} mL Kowloon Dairy Slimilk'], ['banana', 1, '{q} banana, sliced'], ['pb', [20, 30, 30], '{q} g Select Creamy Peanut Butter (about 2 tbsp)'], ['egg', 3, '{q} boiled eggs'], ['honey', [0, 0, 1], '{q} tsp honey']] },
+  yoghurt: { name: 'Yoghurt, oats and fruit bowl with eggs', mins: 3, how: 'Stir everything into the tub. Eat the eggs on the side.',
+    items: [['yoghurt', 475, 'A whole {q} g tub of Nestle Dairy Farm Natural Low Fat Plain Yoghurt'], ['oats', [70, 90, 110], '{q} g Select Whole Rolled Oats, stirred in raw'], ['banana', 1, '{q} banana'], ['raisins', [20, 30, 30], '{q} g Select Seedless Raisins'], ['egg', 3, '{q} boiled eggs'], ['honey', [0, 0, 1], '{q} tsp honey']] },
+  salmonMuffins: { name: 'Smoked salmon, cream cheese and egg muffins', mins: 6, how: 'Your usual, with scrambled eggs and a glass of milk to make it a full meal.',
+    items: [['muffin', [3, 3, 4], '{q} Garden English Muffins, toasted'], ['creamCheese', [30, 40, 40], '{q} g Philadelphia Soft Cream Cheese'], ['smoked', [80, 100, 100], '{q} g smoked salmon'], ['egg', 3, '{q} eggs, scrambled'], ['milk', 250, '{q} mL Kowloon Dairy Slimilk'], ['banana', [0, 1, 1], '{q} banana']] },
+  yakiUdon: { name: 'Soy-ginger chicken yaki udon', mins: 15, how: 'Pan-fry the chicken in the canola oil, 5 min a side, and slice. Loosen the udon under hot water. Fry broccoli 2 min, add udon, chicken, soy and garlic, toss 2 min. Push aside, scramble the eggs in the gap, mix through, finish with sesame oil.',
+    items: [['thigh', [220, 250, 250], '{q} g boneless chicken thigh, skin off (Select frozen Boneless Chicken Thighs, thawed overnight)'], ['udon', [1.5, 2, 2.5], '{q} packs Sau Tao Japanese Udon (200 g each)'], ['broccoli', 1, '{q} head broccoli, cut small'], ['egg', [1, 2, 2], '{q} eggs'], ['soy', 1, '{q} tbsp Lee Kum Kee Soy Sauce, 1 tsp Lee Kum Kee Freshly Minced Garlic, grated ginger if you have it'], ['oilT', 1, '{q} tbsp Mazola Canola Oil'], ['oilt', 1, '{q} tsp Amoy Blended Sesame Oil']] },
+  fishPotato: { name: 'Black pepper fish with potatoes and broccoli', mins: 15, how: 'Prick the potatoes and microwave 8–10 min, turning halfway. Pan-fry the fillets 3–4 min a side in the oil, spoon the sauce over for the last minute. Boil or microwave the broccoli 3 min.',
+    items: [['pangasius', 2, '{q} Simply Fish Frozen Pangasius Fillets (240 g each), thawed and patted dry'], ['potato', [350, 500, 650], '{q} g potatoes'], ['broccoli', 1, '{q} head broccoli'], ['pepperSauce', 2, '{q} tbsp Lee Kum Kee Black Pepper Sauce'], ['oilT', 1, '{q} tbsp Mazola Canola Oil']] },
+  shrimpNoodles: { name: 'Shrimp and egg rice-stick noodles', mins: 12, how: 'Soak the rice sticks in just-boiled water 5 min and drain. Scramble the eggs and tip out. Fry shrimp 2 min, add vegetables 2 min, then noodles, soy and oyster sauce. Fold the eggs back in.',
+    items: [['shrimp', 200, 'A {q} g pack Frozen Argentina Red Shrimp Meat, thawed'], ['egg', 3, '{q} eggs'], ['riceStick', [90, 120, 150], '{q} g Chewy Dried Rice Stick'], ['veg', 200, '{q} g Select Mixed Vegetable (frozen)'], ['soy', 1, '{q} tbsp soy sauce'], ['oyster', 1, '{q} tbsp Amoy Oyster Sauce'], ['oilT', 1.5, '{q} tbsp canola oil']] },
+  tofuNoodles: { name: 'Chili-bean tofu and egg noodles', mins: 12, how: 'Boil the noodles 4–5 min. Meanwhile fry garlic and chili bean sauce 30 s, add tofu, peas and 100 mL water, simmer 5 min, stir in the eggs until just set. Spoon over the drained noodles.',
+    items: [['tofuHard', 340, 'A {q} g block Pak Fook Hard Beancurd, cubed'], ['egg', 2, '{q} eggs'], ['peas', 100, '{q} g Select Garden Peas (frozen)'], ['chiliBean', 1, '{q} tbsp Lee Kum Kee Chili Bean Sauce, 1 tsp minced garlic'], ['oilT', 1, '{q} tbsp canola oil'], ['noodles', [70, 100, 130], '{q} g Sau Tao Shanghai Noodle (dried)']] },
+  salmonPotato: { name: 'Salmon steaks with potatoes and vegetables', mins: 15, how: 'Microwave the potatoes 8–10 min. Season the salmon and cook skin-side down 4 min in a dry non-stick pan, flip, 3 min more. Microwave the vegetables 3 min. Finish with soy and lemon.',
+    items: [['salmon', 320, 'Both steaks from a {q} g pack of Frozen Norwegian Salmon Steak, thawed in the fridge'], ['potato', [250, 400, 550], '{q} g potatoes'], ['veg', 200, '{q} g Select Mixed Vegetable (frozen)'], ['soy', 1, '{q} tsp soy sauce, a squeeze of lemon, black pepper']] },
+  kimchiStew: { name: 'Kimchi, tuna and tofu stew with udon', mins: 12, how: 'One pot. Simmer kimchi in the broth 3 min, add tuna and spoonfuls of tofu for 4 min, then the udon and eggs for 3 min. Finish with sesame oil.',
+    items: [['kimchi', 150, '{q} g Jinmi Kimchi (Cabbage), chopped'], ['tofuSilk', 350, 'A {q} g pack Vitasoy San Sui Silken Tofu'], ['tuna185', 1, '{q} can Select Tuna Chunks in Brine (185 g), drained'], ['egg', 2, '{q} eggs'], ['udon', [1.5, 2, 2.5], '{q} packs Sau Tao Japanese Udon (200 g each)'], ['broth', 300, '{q} mL Swanson Clear Chicken Broth'], ['oilt', 1, '{q} tsp sesame oil']] },
+  out: { name: 'Meal out', mins: 0, fixed: [[950, 40], [1050, 40], [1150, 40]], how: 'Saturday dinner is left open for friends. If you eat in, cook one of the back-up meals.',
+    items: [['free', 1, 'Build the plate on lean protein with noodles or rice: Hainan chicken, wonton noodles, siu mei with the sauce on the side, sashimi or a poke bowl'], ['free', 1, 'Skip the deep-fried sides and the sweet drink']] },
+  dumplingUdon: { name: 'Dumpling udon soup', mins: 12, how: 'One pot. Boil the broth, add dumplings for 5 min, then udon and cabbage for 3 min, then crack in the eggs for 2 min.',
+    items: [['dumpling', [12, 14, 16], '{q} Select Cabbage and Pork Water Dumplings (or the ones in your freezer)'], ['udon', [1, 1, 1.5], '{q} pack Sau Tao Japanese Udon'], ['egg', 2, '{q} eggs'], ['cabbage', 200, '{q} g baby cabbage or frozen mixed vegetables'], ['broth', 500, '{q} mL Swanson Clear Chicken Broth'], ['oilt', 1, '{q} tsp sesame oil']] },
+  tunaSpaghetti: { name: 'Tuna and tomato spaghetti with fried eggs', mins: 12, how: 'Boil the pasta. Fry garlic and tomatoes 3 min in the oil, add tuna and vegetables, toss with the drained pasta and a splash of pasta water. Top with the fried eggs and torn cheese.',
+    items: [['spaghetti', [110, 140, 170], '{q} g Select Spaghetti'], ['tuna185', 1, '{q} can Select Tuna Chunks in Brine (185 g), drained'], ['tomato', 2, '{q} tomatoes, chopped'], ['veg', 100, '{q} g Select Mixed Vegetable (frozen)'], ['egg', 2, '{q} eggs, fried'], ['cheese', 1, '{q} Chesdale Cheddar slice'], ['oilT', 1, '{q} tbsp canola oil, 1 tsp minced garlic']] },
+  tomatoEgg: { name: 'Tomato and egg noodles', mins: 12, how: 'Boil the noodles. Scramble the eggs soft in half the oil and tip out. Cook tomatoes in the rest for 3 min until saucy, add ketchup, sugar, soy and peas, fold the eggs back in and pour over the noodles.',
+    items: [['egg', 5, '{q} eggs, beaten with a pinch of salt'], ['tomato', 3, '{q} tomatoes, in wedges'], ['ketchup', 1, '{q} tbsp ketchup'], ['sugar', 1, '{q} tsp sugar, 1 tsp soy sauce'], ['peas', 100, '{q} g Select Garden Peas (frozen)'], ['oilT', 1, '{q} tbsp canola oil'], ['noodles', [100, 130, 160], '{q} g Sau Tao Shanghai Noodle (dried)']] },
+};
+const ADDONS = {
+  topUp: { name: 'Pre-run top-up', when: '30–60 minutes before the run. On these days the eating window opens here', items: [['muffin', 1, '{q} English muffin with 2 tsp honey'], ['honey', 2, ''], ['banana', 1, '{q} banana']] },
+  shake: { name: 'Protein shake', when: 'Straight after the workout. On gym and session days meal 1 has 2 fewer eggs to make room for it; on big days it stacks on top', items: [['shake', 1, '1 scoop whey protein in water']] },
+  milk: { name: 'Milk after the run', when: 'With meal 1', items: [['milk', 250, '{q} mL Kowloon Dairy Slimilk']] },
+};
+const fmtQ = q => { const w = Math.floor(q), f = q - w; return f === 0.5 ? (w ? w + '½' : '½') : String(q); };
+const qtyAt = (q, ix) => Array.isArray(q) ? q[ix] : q;
+function mealAt(m, ix, lessEggs) {
+  let k = 0, p = 0; const lines = [];
+  m.items.forEach(it => {
+    let q = qtyAt(it[1], ix); const f = FOOD[it[0]];
+    if (lessEggs && it[0] === 'egg') q = Math.max(1, q - lessEggs);
+    if (!q) return;
+    k += f[0] * q; p += f[1] * q;
+    if (it[2]) lines.push(it[2].replace('{q}', fmtQ(q)));
+  });
+  if (m.fixed) { k = m.fixed[ix][0]; p = m.fixed[ix][1]; }
+  return { name: m.name, mins: m.mins, how: m.how, when: m.when, kcal: Math.round(k / 5) * 5, p: Math.round(p), lines };
+}
+/* by weekday index, 0 = Sunday */
+const MENU = [
+  ['oats', 'kimchiStew'],
+  ['muffins', 'yakiUdon'],
+  ['oats', 'fishPotato'],
+  ['muffins', 'shrimpNoodles'],
+  ['oats', 'tofuNoodles'],
+  ['yoghurt', 'salmonPotato'],
+  ['salmonMuffins', 'out'],
+];
+const BACKUPS = ['dumplingUdon', 'tunaSpaghetti', 'tomatoEgg'];
+const SLOT_NAMES = ['Meal 1 · straight after training', 'Meal 2 · by 20:00'];
+function dayMeals(date, list) {
+  const ix = TIER_IX[dayTier(list)], menu = MENU[fromYmd(date).getDay()];
+  const sat = fromYmd(date).getDay() === 6;
+  const shake = needsShake(list);
+  const out = menu.map((id, i) => Object.assign({ slot: sat && i === 0 ? 'Meal 1 · around noon, after class' : SLOT_NAMES[i], id }, mealAt(MEALS[id], ix, shake && i === 0 && ix < 2 ? 2 : 0)));
+  if (shake) out.splice(sat ? 1 : 0, 0, Object.assign({ slot: sat ? 'After the core session' : 'After training', id: 'shake' }, mealAt(ADDONS.shake, ix)));
+  else if (needsMilk(list)) out.splice(1, 0, Object.assign({ slot: 'After the run', id: 'milk' }, mealAt(ADDONS.milk, ix)));
+  if (needsTopUp(list)) out.unshift(Object.assign({ slot: 'Before the run', id: 'topUp' }, mealAt(ADDONS.topUp, ix)));
+  return out;
+}
+
+/* qty and price are ParknShop shelf prices on 11 Oct 2026 from the Consumer Council Online Price Watch; price null = not in that dataset */
+const GROCERY_WEEKLY = [
+  { g: 'Bakery', name: 'Garden English Muffins', pack: '4 pcs', qty: 3, price: 18.8, use: '9 for three breakfasts, plus pre-run top-ups' },
+  { g: 'Eggs and dairy', name: 'BESTbuy Fresh Brown Eggs (L)', pack: '12 pcs', qty: 2, price: 19, use: 'About 22 eggs in the week, with shakes on workout days' },
+  { g: 'Eggs and dairy', name: 'Kowloon Dairy Slimilk Low Fat Hi-Ca Milk Drink', pack: '946 mL', qty: 2, price: 24.5, deal: 'Buy 2 to save $13', use: 'Oats and breakfasts. Add a third carton in weeks with a long run of 12 km or more' },
+  { g: 'Eggs and dairy', name: 'Nestle Dairy Farm Natural Low Fat Plain Yoghurt', pack: '475 g', qty: 1, price: 22, use: 'Friday’s bowl' },
+  { g: 'Tofu and deli', name: 'Pak Fook Hard Beancurd', pack: '340 g', qty: 1, price: 9.5, use: 'Thursday noodles' },
+  { g: 'Tofu and deli', name: 'Vitasoy San Sui Silken Tofu', pack: '350 g', qty: 1, price: 11, use: 'Sunday stew' },
+  { g: 'Tofu and deli', name: 'Maid Brand Sliced Sandwich Ham', pack: '200 g', qty: 1, price: 29.9, use: '6 slices for muffins' },
+  { g: 'Tofu and deli', name: 'Smoked salmon, your usual pack', pack: 'About 100 g needed', qty: 1, price: null, use: 'Saturday muffins' },
+  { g: 'Fish', name: 'Frozen Norwegian Salmon Steak (Norge)', pack: '2 pcs, 320 g', qty: 1, price: 35.9, use: 'Friday dinner' },
+  { g: 'Fish', name: 'Simply Fish Frozen Pangasius Fillet', pack: '240 g', qty: 2, price: 17.9, deal: 'Buy 2 to save $7.80', use: 'Tuesday dinner' },
+  { g: 'Fish', name: 'Frozen Argentina Red Shrimp Meat', pack: '200 g', qty: 1, price: 39.9, use: 'Wednesday noodles' },
+  { g: 'Fruit and veg', name: 'Del Monte Philippine Bananas', pack: '$16.90 per pound', qty: 1, price: null, use: 'About 9 for the week, roughly 3 pounds' },
+  { g: 'Fruit and veg', name: 'Potatoes', pack: 'Per pack', qty: 2, price: 9.9, use: 'About 1 kg for Tuesday and Friday. Check the pack weight' },
+  { g: 'Fruit and veg', name: 'Broccoli', pack: 'Each', qty: 2, price: 6.9, use: 'Monday and Tuesday dinners' },
+  { g: 'Fruit and veg', name: 'Tomatoes', pack: '1 lb pack', qty: 1, price: 9.9, use: 'Muffins' },
+  { g: 'Fruit and veg', name: 'Lettuce', pack: '1 head', qty: 1, price: null, use: 'Muffins' },
+];
+const GROCERY_BULK = [
+  { g: 'Freezer', name: 'Select Boneless Chicken Thighs (frozen)', pack: 'Check pack weight', qty: 1, price: null, use: '250 g a week', lasts: 'Restock when one portion is left' },
+  { g: 'Freezer', name: 'Select Mixed Vegetable (frozen)', pack: '500 g', qty: 2, price: 28, deal: 'Buy 2 to save $12', use: '400 g a week', lasts: '2 weeks' },
+  { g: 'Freezer', name: 'Select Garden Peas (frozen)', pack: '500 g', qty: 1, price: 28, use: '100 g a week', lasts: '5 weeks' },
+  { g: 'Freezer', name: 'Select Cabbage and Pork Water Dumplings', pack: '540 g', qty: 1, price: 23, use: 'Back-up dinner', lasts: 'Use up the ones in your freezer first' },
+  { g: 'Noodles and grains', name: 'Sau Tao Japanese Udon', pack: '200 g × 4', qty: 2, price: 10, use: 'About 4 packs a week', lasts: '2 weeks; the vacuum packs keep for months' },
+  { g: 'Noodles and grains', name: 'Chewy Dried Rice Stick', pack: '280 g', qty: 1, price: 12, deal: 'Buy 2 to save $6', use: '120 g a week', lasts: '2 weeks' },
+  { g: 'Noodles and grains', name: 'Sau Tao Shanghai Noodle', pack: '340 g', qty: 1, price: 7, deal: 'Buy 2 to save $3.50', use: '100 g a week, plus back-ups', lasts: '3 weeks' },
+  { g: 'Noodles and grains', name: 'Select Spaghetti', pack: '500 g', qty: 1, price: 16.9, use: 'Back-up dinner', lasts: 'A month or more' },
+  { g: 'Noodles and grains', name: 'Select Whole Rolled Oats', pack: '1 kg', qty: 1, price: 26, use: 'About 450 g a week', lasts: '2 weeks' },
+  { g: 'Tins and jars', name: 'Select Tuna Chunks in Brine', pack: '185 g', qty: 4, price: 20, deal: 'Buy 2 to save $3', use: '1 a week for the stew, plus back-ups', lasts: 'A month' },
+  { g: 'Tins and jars', name: 'Swanson Clear Chicken Broth', pack: '1 L', qty: 1, price: 16, use: '300 mL a week', lasts: '2 weeks once opened, in the fridge' },
+  { g: 'Tins and jars', name: 'Select Creamy Peanut Butter', pack: '340 g', qty: 1, price: 20, use: '80 g a week', lasts: '4 weeks' },
+  { g: 'Tins and jars', name: 'Select Pure Honey', pack: '400 g', qty: 1, price: 52, use: 'Top-ups and big-day breakfasts', lasts: '2 months or more' },
+  { g: 'Tins and jars', name: 'Select Seedless Raisins', pack: '126 g', qty: 1, price: 21.9, use: '30 g a week', lasts: '4 weeks' },
+  { g: 'Fridge staples', name: 'Chesdale Processed Cheese, Cheddar', pack: '12 slices, 250 g', qty: 1, price: 36, use: '4 slices a week', lasts: '3 weeks' },
+  { g: 'Fridge staples', name: 'Philadelphia Soft Cream Cheese, Original', pack: '190 g', qty: 1, price: 28.5, use: '40 g a week', lasts: '4–5 weeks, check the date' },
+  { g: 'Fridge staples', name: 'Jinmi Kimchi (Cabbage)', pack: '400 g', qty: 1, price: 30, use: '150 g a week', lasts: '2–3 weeks' },
+  { g: 'Sauces and seasoning', name: 'Lee Kum Kee Soy Sauce', pack: '500 mL', qty: 1, price: 10, use: 'Most dinners', lasts: '2 months' },
+  { g: 'Sauces and seasoning', name: 'Amoy Oyster Sauce', pack: '555 g', qty: 1, price: 16, use: 'Shrimp noodles', lasts: '3 months' },
+  { g: 'Sauces and seasoning', name: 'Lee Kum Kee Chili Bean Sauce', pack: '240 g', qty: 1, price: 16, use: 'Tofu noodles', lasts: '3 months' },
+  { g: 'Sauces and seasoning', name: 'Lee Kum Kee Black Pepper Sauce', pack: '230 g', qty: 1, price: 15, use: 'Fish', lasts: '2 months' },
+  { g: 'Sauces and seasoning', name: 'Lee Kum Kee Freshly Minced Garlic', pack: '213 g', qty: 1, price: 18, use: 'Saves chopping', lasts: '2 months' },
+  { g: 'Sauces and seasoning', name: 'Amoy Blended Sesame Oil', pack: '150 mL', qty: 1, price: 14, use: 'Finishing', lasts: '3 months' },
+  { g: 'Sauces and seasoning', name: 'Mazola Canola Oil', pack: '900 mL', qty: 1, price: 29.9, use: 'Cooking', lasts: '2 months' },
+  { g: 'Sauces and seasoning', name: 'Select Ground Black Pepper', pack: '35 g', qty: 1, price: 19.9, use: 'Seasoning', lasts: '3 months' },
+  { g: 'Long-run fuel', name: 'Your protein powder', pack: 'One scoop per workout', qty: 1, price: null, use: 'About 5 scoops a week', lasts: 'Depends on the tub' },
+  { g: 'Long-run fuel', name: 'Pocari Sweat Ion Supply Drink Powder', pack: '66 g × 5 sachets', qty: 1, price: 58.5, use: 'From November: one 1 L sachet per long run of 14 km or more', lasts: '5 long runs. Wellcome lists it at $57' },
+];
+
+/* ---------- calendar export ---------- */
+const DEFAULT_TIMES = { gym: '10:30', run: '10:30', long: '10:00', sat: '15:00', race: '07:00' };
+const OLD_TIMES = { gym: '11:30', run: '18:30', long: '18:00', sat: '15:00', race: '07:00' };
+function dayStartTime(date, list, times) {
+  const first = list.find(s => s.type !== 'rest');
+  if (!first) return null;
+  if (list.some(s => s.kind === 'race')) return times.race;
+  if (fromYmd(date).getDay() === 6) return times.sat;
+  if (first.type === 'gym' || first.type === 'walk') return times.gym;
+  return first.kind === 'long' ? times.long : times.run;
+}
+/* returns [{s, start:'HH:MM', end:'HH:MM'}] for non-rest sessions */
+function daySchedule(date, list, times) {
+  const t0 = dayStartTime(date, list, times);
+  if (!t0) return [];
+  let m = +t0.slice(0, 2) * 60 + +t0.slice(3, 5);
+  const hm = x => pad(Math.floor(x / 60) % 24) + ':' + pad(x % 60);
+  const out = [];
+  list.forEach(s => { if (s.type === 'rest') return; const e = m + (s.mins || 30); out.push({ s, start: hm(m), end: hm(Math.min(e, 23 * 60 + 59)) }); m = e + 10; });
+  return out;
+}
+const lineText = l => Array.isArray(l) ? l[0] + ': ' + l[1] + (l[2] ? ', ' + l[2] : '') : l;
+function sessionSummary(s) {
+  if (s.type === 'run') return (s.kind === 'race' ? 'Half marathon ' : s.title + ' ') + s.km + ' km';
+  if (s.type === 'walk') return 'Incline walk ' + s.mins + ' min';
+  if (s.type === 'gym') return s.title + ' session';
+  return s.title;
+}
+function sessionText(s) {
+  const out = [];
+  if (s.type === 'run') out.push(s.km + ' km, about ' + s.mins + ' min');
+  else if (s.mins) out.push('About ' + s.mins + ' min');
+  if (s.target) {
+    if (s.target.pace) out.push('Target: ' + s.target.pace);
+    if (s.target.hr) out.push('Heart rate: ' + s.target.hr);
+    if (s.target.load) out.push('Load: ' + s.target.load);
+    if (s.target.effort) out.push('Effort: ' + s.target.effort);
+  }
+  s.blocks.forEach(b => { out.push(''); out.push(b.label.toUpperCase()); b.lines.forEach(l => out.push('- ' + lineText(l))); });
+  if (s.notes && s.notes.length) { out.push(''); out.push('NOTES'); s.notes.forEach(n => out.push('- ' + n)); }
+  return out.join('\n');
+}
+const icsEsc = t => t.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+function icsFold(line) {
+  const enc = new TextEncoder();
+  let out = '', cur = '', bytes = 0, limit = 75;
+  for (const ch of line) {
+    const b = enc.encode(ch).length;
+    if (bytes + b > limit) { out += cur + '\r\n '; cur = ''; bytes = 1; limit = 75; }
+    cur += ch; bytes += b;
+  }
+  return out + cur;
+}
+/* days: [{date, list}] in display order */
+function buildIcs(days, times, calName) {
+  const L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Road to 21.1//Training plan//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+    'X-WR-CALNAME:' + icsEsc(calName || 'Road to 21.1'), 'X-WR-TIMEZONE:' + TZID,
+    'BEGIN:VTIMEZONE', 'TZID:' + TZID, 'BEGIN:STANDARD', 'DTSTART:19700101T000000', 'TZOFFSETFROM:+0800', 'TZOFFSETTO:+0800', 'TZNAME:HKT', 'END:STANDARD', 'END:VTIMEZONE'];
+  days.forEach(d => {
+    daySchedule(d.date, d.list, times).forEach(ev => {
+      const day = d.date.replace(/-/g, '');
+      L.push('BEGIN:VEVENT', 'UID:' + ev.s.id.replace(':', '-') + '@road-to-21-1', 'DTSTAMP:20261012T000000Z',
+        'DTSTART;TZID=' + TZID + ':' + day + 'T' + ev.start.replace(':', '') + '00',
+        'DTEND;TZID=' + TZID + ':' + day + 'T' + ev.end.replace(':', '') + '00',
+        'SUMMARY:' + icsEsc(sessionSummary(ev.s)), 'DESCRIPTION:' + icsEsc(sessionText(ev.s)), 'END:VEVENT');
+    });
+  });
+  L.push('END:VCALENDAR');
+  return L.map(icsFold).join('\r\n') + '\r\n';
+}
+function gcalUrl(date, ev) {
+  const day = date.replace(/-/g, '');
+  const q = 'action=TEMPLATE&text=' + encodeURIComponent(sessionSummary(ev.s)) +
+    '&dates=' + day + 'T' + ev.start.replace(':', '') + '00/' + day + 'T' + ev.end.replace(':', '') + '00' +
+    '&ctz=' + encodeURIComponent(TZID) + '&details=' + encodeURIComponent(sessionText(ev.s));
+  return 'https://calendar.google.com/calendar/render?' + q;
+}
+function crc32(bytes) {
+  let crc = ~0;
+  for (let i = 0; i < bytes.length; i++) { let c = (crc ^ bytes[i]) & 0xFF; for (let k = 0; k < 8; k++) c = c & 1 ? (c >>> 1) ^ 0xEDB88320 : c >>> 1; crc = (crc >>> 8) ^ c; }
+  return (~crc) >>> 0;
+}
+/* single-file, stored (no compression) zip */
+function zipStore(name, data) {
+  const nameB = new TextEncoder().encode(name), crc = crc32(data), n = data.length;
+  const out = new Uint8Array(30 + nameB.length + n + 46 + nameB.length + 22), v = new DataView(out.buffer);
+  let o = 0;
+  v.setUint32(o, 0x04034b50, true); v.setUint16(o + 4, 20, true); v.setUint16(o + 6, 0x0800, true); v.setUint16(o + 8, 0, true);
+  v.setUint16(o + 10, 0, true); v.setUint16(o + 12, 0x5B4C, true); v.setUint32(o + 14, crc, true); v.setUint32(o + 18, n, true); v.setUint32(o + 22, n, true);
+  v.setUint16(o + 26, nameB.length, true); v.setUint16(o + 28, 0, true); out.set(nameB, o + 30); out.set(data, o + 30 + nameB.length);
+  const cd = 30 + nameB.length + n; o = cd;
+  v.setUint32(o, 0x02014b50, true); v.setUint16(o + 4, 20, true); v.setUint16(o + 6, 20, true); v.setUint16(o + 8, 0x0800, true); v.setUint16(o + 10, 0, true);
+  v.setUint16(o + 12, 0, true); v.setUint16(o + 14, 0x5B4C, true); v.setUint32(o + 16, crc, true); v.setUint32(o + 20, n, true); v.setUint32(o + 24, n, true);
+  v.setUint16(o + 28, nameB.length, true); v.setUint32(o + 42, 0, true); out.set(nameB, o + 46);
+  const end = cd + 46 + nameB.length; o = end;
+  v.setUint32(o, 0x06054b50, true); v.setUint16(o + 8, 1, true); v.setUint16(o + 10, 1, true); v.setUint32(o + 12, 46 + nameB.length, true); v.setUint32(o + 16, cd, true);
+  return out;
+}
+
+if (typeof module !== 'undefined') module.exports = { START, END, WEEKS, PROGRAM, PHASES, BENCHMARKS, MENU, MEALS, TIERS, TIER_IX, dayMeals, mealAt, BACKUPS, ADDONS, GROCERY_WEEKLY, GROCERY_BULK, DEFAULT_TIMES, addDays, weekOf, weekStart, weekKm, phaseOf, dayTier, dayLoad, fastOk, daySchedule, buildIcs, gcalUrl, zipStore, crc32, sessionText, sessionSummary, fmtShort, fromYmd, weightTarget, mondayOf };
+/* ---------- UI ---------- */
+(function () {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const IC = {
+    run: 'M4 5.5l5 4.5-5 4.5M11 5.5l5 4.5-5 4.5', gym: 'M3 8v4M6 6v8M14 6v8M17 8v4M6 10h8', walk: 'M3 16h14M3 16L17 6v10',
+    rest: 'M15.5 12.5A6.5 6.5 0 1 1 7.5 4.5a5 5 0 0 0 8 8z', watch: 'M10 6.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11zM10 9v3M8 3h4M10 3v3.5',
+    flag: 'M5 17V3M5 4h9l-2 3 2 3H5', check: 'M4.5 10.5l3.5 3.5 7.5-8', cal: 'M4 5h12v11H4zM4 8.5h12M7 3v3M13 3v3',
+    left: 'M12 5l-5 5 5 5', right: 'M8 5l5 5-5 5', swap: 'M4 7h11l-3-3M16 13H5l3 3', ext: 'M8 5H5v10h10v-3M11 4h5v5M16 4l-7 7',
+    down: 'M10 3v9M6.5 8.5L10 12l3.5-3.5M4 16h12', x: 'M5 5l10 10M15 5L5 15',
+    tToday: 'M10 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12zM10 9a1 1 0 1 0 0 2 1 1 0 0 0 0-2z', tWeek: 'M4 5h12M4 10h12M4 15h12',
+    tFood: 'M3 9h14a7 7 0 0 1-14 0zM8 6c0-1.2 1-1.2 1-2.5M12 6c0-1.2 1-1.2 1-2.5', tPlan: 'M4 16V10M8 16V5M12 16v-4M16 16V8',
+  };
+  const icon = n => '<svg class="i" viewBox="0 0 20 20" aria-hidden="true"><path d="' + IC[n] + '"/></svg>';
+  const realToday = () => toYmd(new Date());
+  const LS = 'rt21:v1', LS_TICKS = 'rt21:ticks';
+
+  const S = { tab: 'today', sel: realToday(), wk: mondayOf(realToday()), food: 'meals', swap: null, sheet: null, calMonth: null, sync: 'local',
+    user: { done: {}, src: {}, weights: {}, times: Object.assign({}, DEFAULT_TIMES) }, ticks: {} };
+
+  /* ---------- state ---------- */
+  function sanitize(o) {
+    o = o && typeof o === 'object' ? o : {};
+    const u = { done: {}, src: {}, weights: {}, times: Object.assign({}, DEFAULT_TIMES) };
+    if (o.done && typeof o.done === 'object') for (const k in o.done) if (o.done[k] === true && /^\d{4}-\d\d-\d\d:\d$/.test(k)) u.done[k] = true;
+    if (o.weights && typeof o.weights === 'object') for (const k in o.weights) { const v = +o.weights[k]; if (/^\d{4}-\d\d-\d\d$/.test(k) && v > 30 && v < 200) u.weights[k] = Math.round(v * 10) / 10; }
+    if (o.times && typeof o.times === 'object' && JSON.stringify(o.times) !== JSON.stringify(OLD_TIMES)) for (const k in DEFAULT_TIMES) if (/^\d\d:\d\d$/.test(o.times[k] || '')) u.times[k] = o.times[k];
+    if (o.src && typeof o.src === 'object') {
+      const byWeek = {};
+      for (const k in o.src) { const v = o.src[k]; if (PROGRAM[k] && PROGRAM[v] && k !== v && mondayOf(k) === mondayOf(v)) (byWeek[mondayOf(k)] = byWeek[mondayOf(k)] || {})[k] = v; }
+      for (const w in byWeek) {
+        const seen = {}; let ok = true;
+        for (let i = 0; i < 7; i++) { const d = addDays(w, i), v = byWeek[w][d] || d; if (seen[v]) ok = false; seen[v] = 1; }
+        if (ok) Object.assign(u.src, byWeek[w]);
+      }
+    }
+    return u;
+  }
+  function loadLocal() {
+    try { const r = localStorage.getItem(LS); if (r) S.user = sanitize(JSON.parse(r)); } catch (e) { /* storage unavailable */ }
+    try { const r = localStorage.getItem(LS_TICKS); if (r) S.ticks = JSON.parse(r) || {}; } catch (e) { S.ticks = {}; }
+  }
+  function saveLocal() { try { localStorage.setItem(LS, JSON.stringify(S.user)); } catch (e) { /* ignore */ } }
+  const hasData = u => Object.keys(u.done).length || Object.keys(u.src).length || Object.keys(u.weights).length || JSON.stringify(u.times) !== JSON.stringify(DEFAULT_TIMES);
+
+  let dbDoc = null, cloudReady = false, writing = false, dirty = false;
+  function setSync(v) { if (S.sync !== v) { S.sync = v; renderWhere(); } }
+  async function initCloud() {
+    let db = null;
+    try { if (window.claude && window.claude.use) db = await window.claude.use('db'); } catch (e) { db = null; }
+    if (!db) return;
+    /* only the owner's progress lives in the page; anyone else keeps a private copy in their own browser */
+    try { const user = await window.claude.use('user'); if (user && (await user.isOwner()) === false) return; } catch (e) { /* unknown: let the first write decide */ }
+    try {
+      dbDoc = db.doc('tracker/state');
+      dbDoc.onSnapshot(function (snap) {
+        if (snap.metadata && snap.metadata.hasPendingWrites) return;
+        const first = !cloudReady; cloudReady = true;
+        if (!snap.exists) { setSync('cloud'); if (first && hasData(S.user)) save(); return; }
+        setSync('cloud');
+        if (dirty || writing) return;
+        const remote = sanitize(snap.data());
+        if (JSON.stringify(remote) !== JSON.stringify(S.user)) { S.user = remote; saveLocal(); render(); }
+      }, function () { dbDoc = null; setSync('local'); });
+    } catch (e) { dbDoc = null; setSync('local'); }
+  }
+  function save() { saveLocal(); if (!dbDoc || !cloudReady) return; dirty = true; if (!writing) flush(); }
+  async function flush() {
+    writing = true; let retried = false;
+    while (dirty && dbDoc) {
+      dirty = false;
+      try { await dbDoc.set(JSON.parse(JSON.stringify(S.user))); retried = false; }
+      catch (e) {
+        if (e && e.code === 'unavailable' && !retried) { retried = true; dirty = true; await new Promise(r => setTimeout(r, 1500 + Math.random() * 1500)); }
+        else { dbDoc = null; setSync('local'); }
+      }
+    }
+    writing = false;
+  }
+
+  /* ---------- derived ---------- */
+  const sessionsFor = d => PROGRAM[S.user.src[d] || d] || null;
+  const isDone = s => !!S.user.done[s.id];
+  const displayDateOf = origin => { const w = mondayOf(origin); for (let i = 0; i < 7; i++) { const d = addDays(w, i); if ((S.user.src[d] || d) === origin) return d; } return origin; };
+  const weekMoved = w => { for (let i = 0; i < 7; i++) if (S.user.src[addDays(w, i)]) return true; return false; };
+  function swapDays(a, b) {
+    const sa = S.user.src[a] || a, sb = S.user.src[b] || b;
+    const set = (d, v) => { if (v === d) delete S.user.src[d]; else S.user.src[d] = v; };
+    set(a, sb); set(b, sa);
+  }
+  const typeMarks = list => list.filter(s => s.type !== 'rest').map(s => '<i class="' + s.type + (isDone(s) ? ' done' : '') + '"></i>').join('');
+  function chipLabel(s) {
+    if (s.type === 'run') return s.title + ' · ' + s.km + ' km';
+    if (s.type === 'walk') return 'Incline walk · ' + s.mins + ' min';
+    return s.title;
+  }
+  let toastT = 0;
+  function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3600); }
+
+  /* ---------- shared pieces ---------- */
+  function renderWhere() {
+    const t = realToday(), n = weekOf(t);
+    const txt = n ? 'Week ' + n + ' · ' + phaseOf(n).name : t < START ? 'Starts ' + fmtDM(START) : 'Program complete';
+    const tip = S.sync === 'cloud' ? 'Progress is saved to this page and follows you across devices' : 'Progress is saved on this device';
+    $('#where').innerHTML = '<span>' + esc(txt) + '</span><i class="dot ' + (S.sync === 'cloud' ? 'cloud' : '') + '" role="img" aria-label="' + tip + '" title="' + tip + '"></i>';
+  }
+  function renderTabs() {
+    const defs = [['today', 'Today', 'tToday'], ['week', 'Week', 'tWeek'], ['food', 'Food', 'tFood'], ['plan', 'Plan', 'tPlan']];
+    $('#tabs').innerHTML = defs.map(d => '<button type="button" data-act="tab" data-tab="' + d[0] + '"' + (S.tab === d[0] ? ' aria-current="page"' : '') + '>' + icon(d[2]) + d[1] + '</button>').join('');
+  }
+  function strip(sel) {
+    const w = mondayOf(sel), t = realToday();
+    let h = '<div class="strip" role="group" aria-label="Days of this week">';
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(w, i), list = sessionsFor(d) || [];
+      h += '<button type="button" data-act="pickDay" data-d="' + d + '" aria-pressed="' + (d === sel) + '" class="' + (d === t ? 'today' : '') + '" aria-label="' + fmtShort(d) + '">' +
+        '<span class="d">' + DOW[fromYmd(d).getDay()] + '</span><span class="n">' + fromYmd(d).getDate() + '</span><span class="marks">' + typeMarks(list) + '</span></button>';
+    }
+    return h + '</div>';
+  }
+  function outside(d) {
+    const before = d < START;
+    return '<div class="panel empty"><p class="eyebrow">' + (before ? 'Before the program' : 'After the program') + '</p>' +
+      '<p>The 16 weeks run from ' + fmtShort(START) + ' 2026 to ' + fmtShort(END) + ' 2027.</p>' +
+      '<button type="button" class="btn primary" data-act="goto" data-d="' + (before ? START : END) + '">' + (before ? 'Go to week 1' : 'Go to the final week') + '</button></div>';
+  }
+
+  /* ---------- session card ---------- */
+  const KIND = { easy: 'Run · Easy', long: 'Run · Long', quality: 'Run · Session', test: 'Run · Test', race: 'Race day', push: 'Gym · 60 min', pull: 'Gym · 60 min', core: 'Gym', incline: 'Treadmill', rest: 'Recovery' };
+  function lineHtml(l) {
+    if (Array.isArray(l)) return '<li class="ex"><span class="nm">' + esc(l[0]) + '</span><span class="st">' + esc(l[1]) + '</span>' + (l[2] ? '<span class="ld">' + esc(l[2]) + '</span>' : '') + '</li>';
+    return '<li>' + esc(l) + '</li>';
+  }
+  function card(s, date, ev) {
+    const done = isDone(s);
+    const ic = s.type === 'run' ? (s.kind === 'race' ? 'flag' : s.kind === 'test' ? 'watch' : 'run') : s.type;
+    let h = '<article class="card' + (done ? ' done' : '') + '"><div class="chead"><span class="tile ' + s.type + '">' + icon(ic) + '</span>' +
+      '<div class="kind"><p class="eyebrow">' + esc(s.type === 'gym' ? 'Gym · ' + s.mins + ' min' : KIND[s.kind]) + '</p><h2>' + esc(s.title) + '</h2></div>';
+    if (s.type !== 'rest') h += '<button type="button" class="check" data-act="done" data-id="' + s.id + '" aria-pressed="' + done + '">' + icon('check') + (done ? 'Done' : 'Mark done') + '</button>';
+    h += '</div>';
+    if (s.type === 'run') h += '<div class="big"><span><span class="v">' + s.km + '</span><span class="u">km</span></span><span class="sub">About ' + s.mins + ' min' + (ev ? ' · ' + ev.start : '') + '</span></div>';
+    else if (s.type === 'walk') h += '<div class="big"><span><span class="v">' + s.mins + '</span><span class="u">min</span></span><span class="sub">' + s.km + ' km on the treadmill' + (ev ? ' · ' + ev.start : '') + '</span></div>';
+    if (s.target) {
+      const T = s.target, rows = [];
+      if (T.pace) rows.push([s.type === 'walk' ? 'Setting' : 'Pace', T.pace]);
+      if (T.hr) rows.push(['Heart rate', T.hr]);
+      if (T.load) rows.push(['Load', T.load]);
+      if (T.effort) rows.push([s.type === 'gym' ? 'Rest' : 'Effort', T.effort]);
+      h += '<dl class="targets">' + rows.map(r => '<div><dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd></div>').join('') + '</dl>';
+    }
+    h += '<details class="bd" open><summary>Session breakdown' + icon('right') + '</summary><div class="blocks">' +
+      s.blocks.map(b => '<div class="block"><p class="eyebrow">' + esc(b.label) + '</p><ul>' + b.lines.map(lineHtml).join('') + '</ul></div>').join('') + '</div></details>';
+    if (s.notes && s.notes.length) h += '<ul class="notes">' + s.notes.map(n => '<li>' + esc(n) + '</li>').join('') + '</ul>';
+    const foot = [];
+    if (s.origin !== date) foot.push('<span class="moved">Moved from ' + fmtShort(s.origin) + '</span>');
+    if (ev) foot.push('<a href="' + esc(gcalUrl(date, ev)) + '" target="_blank" rel="noopener">' + icon('cal') + 'Add to Google Calendar</a>');
+    if (foot.length) h += '<div class="cfoot">' + foot.join('') + '</div>';
+    return h + '</article>';
+  }
+
+  /* ---------- fuel ---------- */
+  function fuelLines(list) {
+    const out = [];
+    if (!fastOk(list)) out.push(['warn', 'Race morning: eat meal 1 by 04:30, two and a half hours before the start. Meal 2 at the usual time.']);
+    else if (needsTopUp(list)) out.push(['warn', 'Not fasted today. Have the small top-up 30–60 minutes before the run, meal 1 straight after, meal 2 by 20:00.']);
+    else out.push(['', 'Train fasted when you wake, with water. Meal 1 straight after, meal 2 by 20:00.']);
+    if (list.some(s => s.type === 'run' && s.km >= 14)) out.push(['', 'During the run: 500 mL Pocari Sweat, sipped from 30 minutes in.']);
+    return out;
+  }
+  function macros(tier) {
+    const T = TIERS[tier];
+    return '<div class="macro"><div><b>' + T.kcal.toLocaleString('en') + '</b><span>kcal</span></div><div><b>' + T.p + ' g</b><span>Protein</span></div><div><b>' + T.c + ' g</b><span>Carbs</span></div></div>';
+  }
+  function fuelPanel(d, list) {
+    const tier = dayTier(list), T = TIERS[tier], ms = dayMeals(d, list);
+    const tot = ms.reduce((a, m) => a + m.kcal, 0), pr = ms.reduce((a, m) => a + m.p, 0);
+    let h = '<section class="sec"><div class="sechead"><h2>Fuel</h2><span class="pill plain">' + T.name + '</span></div><div class="panel" style="display:flex;flex-direction:column;gap:12px">' + macros(tier);
+    fuelLines(list).forEach(f => { h += '<p class="flag ' + f[0] + '">' + esc(f[1]) + '</p>'; });
+    h += '<ul class="rows">' + ms.map(m => '<li><div class="grow"><p class="eyebrow">' + esc(m.slot) + '</p><p>' + esc(m.name) + '</p></div><span class="num">' + m.kcal + ' kcal</span></li>').join('') + '</ul>';
+    h += '<p class="small">About ' + tot.toLocaleString('en') + ' kcal and ' + pr + ' g protein as planned. Portions are sized for today’s training.</p>';
+    h += '<button type="button" class="link" data-act="tab" data-tab="food">Recipes and shopping list' + icon('right') + '</button></div></section>';
+    return h;
+  }
+  function mealCard(m, label) {
+    return '<article class="panel meal"><div class="sechead"><p class="eyebrow">' + esc(label) + (m.mins ? ' · ' + m.mins + ' min' : '') + '</p><span class="num">' + m.kcal + ' kcal · ' + m.p + ' g protein</span></div><h3 style="margin-top:6px">' + esc(m.name) + '</h3>' +
+      '<ul class="items">' + m.lines.map(x => '<li>' + esc(x) + '</li>').join('') + '</ul>' + (m.when ? '<p class="portion">' + esc(m.when) + '</p>' : '') + (m.how ? '<p class="how muted">' + esc(m.how) + '</p>' : '') + '</article>';
+  }
+
+  /* ---------- views ---------- */
+  function viewDay() {
+    const d = S.sel, t = realToday(), n = weekOf(d), list = sessionsFor(d);
+    const rel = d === t ? 'Today' : d === addDays(t, 1) ? 'Tomorrow' : d === addDays(t, -1) ? 'Yesterday' : '';
+    const dt = fromYmd(d);
+    let h = '<div class="daynav"><div><p class="eyebrow">' + (rel ? rel + ' · ' : '') + (n ? 'Week ' + n + ' of 16 · ' + phaseOf(n).name : dt.getFullYear()) + '</p><h1>' + DOW_LONG[dt.getDay()] + ' ' + dt.getDate() + ' ' + MON[dt.getMonth()] + '</h1></div>' +
+      '<div class="navbtns"><button type="button" class="ib" data-act="shiftDay" data-n="-1" aria-label="Previous day">' + icon('left') + '</button><button type="button" class="ib" data-act="shiftDay" data-n="1" aria-label="Next day">' + icon('right') + '</button><button type="button" class="ib" data-act="cal" aria-label="Pick a date">' + icon('cal') + '</button></div></div>';
+    h += strip(d);
+    if (d !== t) h += '<div><button type="button" class="pill" data-act="goto" data-d="' + t + '">' + icon('left') + 'Back to today</button></div>';
+    if (!list) return h + outside(d);
+    const sched = daySchedule(d, list, S.user.times);
+    list.forEach(s => { h += card(s, d, sched.find(e => e.s === s)); });
+    h += '<div class="btnrow"><button type="button" class="btn" data-act="swapFrom" data-d="' + d + '">' + icon('swap') + 'Move this day</button></div>';
+    h += fuelPanel(d, list);
+    if (d <= t) {
+      const w = S.user.weights[d];
+      h += '<section class="sec"><div class="sechead"><h2>Weigh-in</h2><span class="small">Target this week ' + weightTarget(addDays(mondayOf(d), 6)).toFixed(1) + ' kg</span></div><div class="panel" style="display:flex;flex-direction:column;gap:10px">' +
+        '<form class="weigh" data-form="weigh"><input id="weigh-in" type="number" inputmode="decimal" step="0.1" min="40" max="150" placeholder="72.5" value="' + (w != null ? w : '') + '" aria-label="Morning weight in kilograms"><span class="muted">kg</span><button class="btn primary" type="submit">Save</button>' + (w != null ? '<button type="button" class="btn" data-act="clearWeight">Clear</button>' : '') + '</form>' +
+        '<p class="small">After waking, before eating, same scale. Twice a week is enough.</p></div></section>';
+    }
+    return h;
+  }
+
+  function viewWeek() {
+    const w = S.wk, n = weekOf(w), t = realToday();
+    let h = '<div class="daynav"><div><p class="eyebrow">' + (n ? 'Week ' + n + ' of 16 · ' + phaseOf(n).name : 'Outside the program') + '</p><h1>' + fmtRange(w, addDays(w, 6)) + '</h1></div>' +
+      '<div class="navbtns"><button type="button" class="ib" data-act="shiftWeek" data-n="-1" aria-label="Previous week">' + icon('left') + '</button><button type="button" class="ib" data-act="shiftWeek" data-n="1" aria-label="Next week">' + icon('right') + '</button><button type="button" class="ib" data-act="cal" aria-label="Pick a week">' + icon('cal') + '</button></div></div>';
+    if (w !== mondayOf(t)) h += '<div><button type="button" class="pill" data-act="thisWeek">' + icon('left') + 'Back to this week</button></div>';
+    if (!n) return h + outside(w);
+    let total = 0, done = 0, km = 0, runs = 0, gyms = 0, walks = 0;
+    for (let i = 0; i < 7; i++) sessionsFor(addDays(w, i)).forEach(s => { if (s.type === 'rest') return; total++; if (isDone(s)) done++; if (s.type === 'run') { runs++; km += s.km; } else if (s.type === 'gym') gyms++; else walks++; });
+    h += '<div class="panel" style="display:flex;flex-direction:column;gap:10px"><div class="sechead"><span><span class="num" style="font-size:28px">' + (Math.round(km * 10) / 10) + '</span> <span class="muted">km planned · ' + runs + ' runs · ' + gyms + ' gym · ' + walks + ' walks</span></span></div>' +
+      '<div class="meter" role="img" aria-label="' + done + ' of ' + total + ' sessions done"><i style="width:' + (total ? Math.round(done / total * 100) : 0) + '%"></i></div><p class="small">' + done + ' of ' + total + ' sessions done. ' + esc(phaseOf(n).focus) + '</p></div>';
+    if (S.swap && mondayOf(S.swap) === w) h += '<div class="banner"><span>Moving ' + fmtShort(S.swap) + '. Choose the day to swap it with.</span><button type="button" class="btn sm" data-act="swapCancel">Cancel</button></div>';
+    h += '<div class="panel wk">';
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(w, i), list = sessionsFor(d), dt = fromYmd(d), picked = S.swap === d;
+      h += '<div class="wkrow' + (d === t ? ' today' : '') + (picked ? ' picked' : '') + '"><button type="button" class="dt" data-act="goto" data-d="' + d + '" aria-label="Open ' + fmtShort(d) + '"><span class="d">' + DOW[dt.getDay()] + '</span><span class="n">' + dt.getDate() + '</span></button>' +
+        '<button type="button" class="open" data-act="goto" data-d="' + d + '">' + list.map(s => '<span class="chip' + (isDone(s) ? ' done' : '') + '"><i class="' + s.type + '"></i><span>' + esc(chipLabel(s)) + '</span>' + (isDone(s) ? icon('check') : '') + '</span>').join('') +
+        (S.user.src[d] ? '<span class="small">Moved from ' + DOW_LONG[fromYmd(S.user.src[d]).getDay()] + '</span>' : '') + '</button>';
+      if (S.swap && mondayOf(S.swap) === w) h += picked ? '<span class="small">Moving</span>' : '<button type="button" class="btn sm primary" data-act="swapTo" data-d="' + d + '">Swap</button>';
+      else h += '<button type="button" class="btn sm" data-act="swapFrom" data-d="' + d + '" aria-label="Move ' + DOW_LONG[dt.getDay()] + '">Move</button>';
+      h += '</div>';
+    }
+    h += '</div><div class="btnrow"><button type="button" class="btn primary" data-act="export">' + icon('cal') + 'Add to calendar</button>' + (weekMoved(w) ? '<button type="button" class="btn" data-act="resetWeek">Undo moves this week</button>' : '') + '</div>';
+    h += '<p class="small">Moving a day swaps its sessions with another day in the same week, so the week\u2019s load stays the same. Keep the long run and the Tuesday session at least a day apart.</p>';
+    return h;
+  }
+
+  function viewFood() {
+    let h = '<div class="daynav"><div><p class="eyebrow">Eat for the day you are training</p><h1>Food</h1></div></div>' +
+      '<div class="seg" role="group" aria-label="Food sections">' + [['meals', 'Meals'], ['shop', 'Shopping'], ['night', 'Nights out']].map(x => '<button type="button" data-act="food" data-f="' + x[0] + '" aria-pressed="' + (S.food === x[0]) + '">' + x[1] + '</button>').join('') + '</div>';
+    if (S.food === 'meals') {
+      const d = S.sel, list = sessionsFor(d) || [], tier = dayTier(list), T = TIERS[tier], ix = TIER_IX[tier], ms = dayMeals(d, list);
+      h += strip(d) + '<div class="sechead"><h2>' + fmtShort(d) + '</h2><span class="pill plain">' + T.name + '</span></div>' + macros(tier);
+      h += '<p class="muted">' + esc(list.filter(s => s.type !== 'rest').map(chipLabel).join(' + ') || 'No training') + '. ' + esc(T.note) + '</p>';
+      fuelLines(list).forEach(f => { h += '<p class="flag ' + f[0] + '">' + esc(f[1]) + '</p>'; });
+      ms.forEach(m => { h += mealCard(m, m.slot); });
+      h += '<section class="sec"><div class="sechead"><h2>Back-up meals</h2></div><p class="muted">Pantry dinners for when plans change, sized for ' + T.name.toLowerCase() + ' portions. Dumpling udon soup is the one for the day after a night out.</p>' +
+        BACKUPS.map(id => mealCard(mealAt(MEALS[id], ix), 'Back-up')).join('') + '</section>';
+      h += '<p class="small">Calories and protein are estimates from standard food values, good to within about 10%. Protein stays near ' + T.p + ' g every day; noodles, potatoes, oats and muffins are what scale with training. No rice to cook anywhere in the plan.</p>';
+    } else if (S.food === 'shop') {
+      const sum = a => a.reduce((t, x) => t + (x.price ? x.price * x.qty : 0), 0);
+      const sect = (key, title, sub, arr) => {
+        let s = '<section class="sec"><div class="sechead"><h2>' + title + '</h2><span class="num">HK$' + Math.round(sum(arr)) + '</span></div><p class="muted">' + sub + '</p><div class="panel groc">', g = '';
+        arr.forEach((x, i) => {
+          if (x.g !== g) { g = x.g; s += '<p class="gg">' + esc(g) + '</p>'; }
+          const id = key + i;
+          s += '<label><input type="checkbox" id="tick-' + id + '" data-tick="' + id + '"' + (S.ticks[id] ? ' checked' : '') + '><span class="grow"><span class="gn">' + (x.qty > 1 ? x.qty + ' × ' : '') + esc(x.name) + '</span><br><span class="muted">' + esc(x.pack) + ' · ' + esc(x.use) + (x.lasts ? ' · ' + esc(x.lasts) : '') + (x.deal ? ' · ' + esc(x.deal) : '') + '</span></span><span class="num">' + (x.price ? '$' + (x.price * x.qty).toFixed(x.price * x.qty % 1 ? 2 : 0) : 'Shelf price') + '</span></label>';
+        });
+        return s + '</div></section>';
+      };
+      h += sect('w', 'Every week', 'Fresh food and the week\u2019s fish, for the seven-day menu at training-day portions.', GROCERY_WEEKLY);
+      h += sect('b', 'Stock up', 'Freezer, pantry and fridge staples. Buy once, then restock as each runs out.', GROCERY_BULK);
+      h += '<div class="btnrow"><button type="button" class="btn" data-act="clearTicks">Clear all ticks</button></div>';
+      h += '<p class="small">Product names, pack sizes and prices are ParknShop shelf prices from the Consumer Council\u2019s Online Price Watch on 11 October 2026. Prices change weekly and multi-buy savings are not subtracted. Items marked \u201cShelf price\u201d are not in that dataset: the chicken, smoked salmon, bananas and lettuce. Wellcome and Market Place carry the branded items at similar prices; the Select and BESTbuy lines are ParknShop\u2019s own.</p>';
+    } else {
+      h += '<section class="sec"><div class="sechead"><h2>Before you go out</h2></div><div class="panel"><ul class="prose">' +
+        ['Eat a full dinner with rice first. Drinking on an empty stomach is what leads to food at 3 am.', 'If you know the night is coming, move tomorrow\u2019s session now in the Week view. The long run and the Tuesday session never sit on the morning after.', 'Water between drinks, and 500 mL before bed.'].map(x => '<li>' + x + '</li>').join('') + '</ul></div></section>' +
+        '<section class="sec"><div class="sechead"><h2>The day after</h2></div><div class="panel"><ul class="prose">' +
+        ['No fasting. Eat meal 1 when you wake instead of waiting for noon, with 500 mL of water or Pocari Sweat.', 'Train easy or not at all: a 30–40 minute incline walk or a flat walk outside. No long run, no repeats, no squats or deadlifts. Alcohol raises your heart rate and the heat adds to it.', 'Eat the planned meals at training-day portions even if you skip training. Under-eating to make up for the night is what sets up the rebound eating.', 'Dumpling udon soup is the best dinner on the menu for today: salt, fluid, carbs and protein in one pot.', 'Go back to the plan tomorrow. Skip the missed session; do not stack it on the next one.'].map(x => '<li>' + x + '</li>').join('') + '</ul></div></section>' +
+        '<section class="sec"><div class="sechead"><h2>What it costs</h2></div><div class="panel"><p class="prose">Six 330 mL beers are about 850 kcal, which is roughly three days of this plan\u2019s deficit. One night a week still leaves steady progress. Two a week roughly halves the rate of weight loss and costs a training day each time.</p></div></section>' +
+        '<section class="sec"><div class="sechead"><h2>Eating out</h2></div><div class="panel"><ul class="prose">' +
+        ['Build the plate on lean protein with noodles or rice: Hainan chicken, wonton noodles, siu mei with the sauce on the side, sashimi or a poke bowl.', 'Skip the deep-fried sides and the sweet drink. Those two are usually half the calories.', 'A meal out counts as that day\u2019s meal 2 at about 1,000 kcal. No need to adjust meal 1.'].map(x => '<li>' + x + '</li>').join('') + '</ul></div></section>';
+    }
+    return h;
+  }
+
+  /* ---------- charts ---------- */
+  const topRound = (x, y, w, h, r) => { r = Math.min(r, h, w / 2); return 'M' + x + ',' + (y + h) + 'V' + (y + r) + 'Q' + x + ',' + y + ' ' + (x + r) + ',' + y + 'H' + (x + w - r) + 'Q' + (x + w) + ',' + y + ' ' + (x + w) + ',' + (y + r) + 'V' + (y + h) + 'Z'; };
+  function weekDoneKm(n) { let t = 0; for (let i = 0; i < 7; i++) PROGRAM[addDays(weekStart(n), i)].forEach(s => { if (s.type === 'run' && isDone(s)) t += s.km; }); return Math.round(t * 10) / 10; }
+  function volumeChart() {
+    const Wd = 340, H = 176, L = 26, R = 6, T = 16, B = 38, pw = Wd - L - R, ph = H - T - B, band = pw / WEEKS, bw = 12, max = 44, cur = weekOf(realToday());
+    const y = v => T + ph - v / max * ph;
+    let g = '', rows = '';
+    [0, 10, 20, 30, 40].forEach(v => { g += '<line class="grid" x1="' + L + '" x2="' + (Wd - R) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + '</text>'; });
+    let peak = 1; for (let n = 2; n <= WEEKS; n++) if (weekKm(n) > weekKm(peak)) peak = n;
+    for (let n = 1; n <= WEEKS; n++) {
+      const km = weekKm(n), dn = Math.min(weekDoneKm(n), km), cx = L + band * (n - .5), x = cx - bw / 2, ws = weekStart(n);
+      g += '<rect class="hit" tabindex="0" role="img" aria-label="Week ' + n + ', ' + fmtRange(ws, addDays(ws, 6)) + ': ' + km + ' km planned, ' + dn + ' km done" data-tip="Week ' + n + ' · ' + fmtRange(ws, addDays(ws, 6)) + '" data-tip2="' + km + ' km planned · ' + dn + ' km done" x="' + (cx - band / 2) + '" y="' + T + '" width="' + band + '" height="' + (ph + 16) + '"/>' +
+        '<g class="b"><path class="bar" d="' + topRound(x, y(km), bw, y(0) - y(km), 4) + '"/>' + (dn > 0 ? '<path class="bar dn" d="' + topRound(x, y(dn), bw, y(0) - y(dn), dn >= km ? 4 : 0) + '"/>' : '') + '</g>' +
+        '<text x="' + cx + '" y="' + (H - B + 14) + '" text-anchor="middle"' + (n === cur ? ' class="lbl"' : '') + '>' + n + '</text>';
+      if (n === peak || n === cur) g += '<text class="lbl" x="' + cx + '" y="' + (y(km) - 5) + '" text-anchor="middle">' + km + '</text>';
+      rows += '<tr><td>' + n + '</td><td>' + fmtRange(ws, addDays(ws, 6)) + '</td><td>' + phaseOf(n).name + '</td><td>' + km + '</td><td>' + dn + '</td></tr>';
+    }
+    PHASES.forEach(p => { const x0 = L + band * (p.from - 1), x1 = L + band * p.to; g += '<line class="grid" x1="' + (x0 + 2) + '" x2="' + (x1 - 2) + '" y1="' + (H - 16) + '" y2="' + (H - 16) + '"/><text x="' + ((x0 + x1) / 2) + '" y="' + (H - 3) + '" text-anchor="middle">' + (p.id === 'taper' ? 'Taper' : p.name) + '</text>'; });
+    return '<div class="legend"><span><i></i>Planned km</span><span><i class="dn"></i>Done</span></div><div class="chart"><svg viewBox="0 0 ' + Wd + ' ' + H + '" role="group" aria-label="Running distance by week">' + g + '</svg></div>' +
+      '<details class="bd"><summary>Show as a table' + icon('right') + '</summary><div class="scroll"><table class="tv"><thead><tr><th>Week</th><th>Dates</th><th>Phase</th><th>Planned km</th><th>Done km</th></tr></thead><tbody>' + rows + '</tbody></table></div></details>';
+  }
+  function weightChart() {
+    const Wd = 340, H = 160, L = 30, R = 46, T = 12, B = 24, pw = Wd - L - R, ph = H - T - B, span = diffDays(END, START);
+    const pts = Object.keys(S.user.weights).sort().map(d => ({ d, v: S.user.weights[d], x: diffDays(d, START) })).filter(p => p.x >= -14 && p.x <= span + 14);
+    const vals = pts.map(p => p.v).concat([WEIGHT_START, WEIGHT_GOAL]);
+    const lo = Math.floor(Math.min.apply(null, vals) - .4), hi = Math.ceil(Math.max.apply(null, vals) + .4);
+    const x = v => L + Math.max(0, Math.min(1, v / span)) * pw, y = v => T + ph - (v - lo) / (hi - lo) * ph;
+    let g = '';
+    for (let v = lo; v <= hi; v++) g += '<line class="grid" x1="' + L + '" x2="' + (L + pw) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + '</text>';
+    [['2026-10-12', 'Oct'], ['2026-11-01', 'Nov'], ['2026-12-01', 'Dec'], ['2027-01-01', 'Jan']].forEach(m => { g += '<text x="' + x(diffDays(m[0], START)) + '" y="' + (H - 6) + '">' + m[1] + '</text>'; });
+    g += '<line x1="' + x(0) + '" y1="' + y(WEIGHT_START) + '" x2="' + x(span) + '" y2="' + y(WEIGHT_GOAL) + '" stroke="var(--ink-3)" stroke-width="2" stroke-linecap="round"/><text x="' + (x(span) + 6) + '" y="' + (y(WEIGHT_GOAL) + 4) + '">' + WEIGHT_GOAL + ' kg</text>';
+    if (pts.length) {
+      g += '<polyline fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="' + pts.map(p => x(p.x) + ',' + y(p.v)).join(' ') + '"/>';
+      pts.forEach((p, i) => {
+        g += '<circle cx="' + x(p.x) + '" cy="' + y(p.v) + '" r="4" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/>' +
+          '<circle class="hit" tabindex="0" role="img" aria-label="' + fmtShort(p.d) + ': ' + p.v + ' kg" data-tip="' + p.v.toFixed(1) + ' kg" data-tip2="' + fmtShort(p.d) + ' · target ' + weightTarget(p.d).toFixed(1) + ' kg" cx="' + x(p.x) + '" cy="' + y(p.v) + '" r="13"/>';
+        if (i === pts.length - 1) g += '<text class="lbl" x="' + Math.min(x(p.x), L + pw - 14) + '" y="' + (y(p.v) - 9) + '" text-anchor="middle">' + p.v.toFixed(1) + '</text>';
+      });
+    }
+    let h = '<div class="legend"><span><i class="ln"></i>Logged</span><span><i class="tg"></i>Target: ' + WEIGHT_START + ' to ' + WEIGHT_GOAL + ' kg</span></div><div class="chart"><svg viewBox="0 0 ' + Wd + ' ' + H + '" role="group" aria-label="Body weight against target">' + g + '</svg></div>';
+    if (!pts.length) h += '<p class="muted">No weigh-ins yet. Log a morning weight on the Today screen and the line starts here.</p>';
+    else h += '<details class="bd"><summary>Show as a table' + icon('right') + '</summary><div class="scroll"><table class="tv"><thead><tr><th>Date</th><th>Weight</th><th>Target</th></tr></thead><tbody>' + pts.slice().reverse().map(p => '<tr><td>' + fmtShort(p.d) + '</td><td>' + p.v.toFixed(1) + ' kg</td><td>' + weightTarget(p.d).toFixed(1) + ' kg</td></tr>').join('') + '</tbody></table></div></details>';
+    return h;
+  }
+
+  function viewPlan() {
+    const cur = weekOf(realToday());
+    let h = '<div class="daynav"><div><p class="eyebrow">' + fmtDM(START) + ' 2026 – ' + fmtDM(END) + ' 2027</p><h1>16 weeks to a half</h1></div></div>';
+    h += '<section class="sec"><div class="sechead"><h2>Phases</h2></div><div class="panel">' + PHASES.map((p, i) => {
+      const a = weekStart(p.from), b = addDays(weekStart(p.to), 6), now = cur >= p.from && cur <= p.to;
+      return '<div class="phase' + (now ? ' now' : '') + '"><span class="n">' + (i + 1) + '</span><h3>' + p.name + (now ? ' <span class="pill">Now</span>' : '') + '<span class="small">' + fmtRange(a, b) + ' · long run ' + p.long + '</span></h3><p>' + esc(p.focus) + '</p></div>';
+    }).join('') + '</div></section>';
+    h += '<section class="sec"><div class="sechead"><h2>Weekly distance</h2><span class="small">km of running</span></div><div class="panel">' + volumeChart() + '</div></section>';
+    h += '<section class="sec"><div class="sechead"><h2>Checkpoints</h2></div><div class="panel"><ul class="rows">' + BENCHMARKS.map(b => {
+      const run = PROGRAM[b.date].find(s => s.type === 'run'), ok = run && isDone(run);
+      return '<li><span class="tile ' + (ok ? 'walk' : 'rest') + '" style="' + (ok ? 'color:var(--good);background:var(--good-wash)' : '') + '">' + icon(ok ? 'check' : 'flag') + '</span><button type="button" class="grow" style="text-align:left" data-act="goto" data-d="' + displayDateOf(b.date) + '"><p style="font-weight:600">' + esc(b.label) + '</p><p class="muted">' + esc(b.goal) + '</p></button><span class="num">' + fmtDM(displayDateOf(b.date)) + '</span></li>';
+    }).join('') + '</ul></div></section>';
+    h += '<section class="sec"><div class="sechead"><h2>Weight</h2><span class="small">About 0.25 kg a week</span></div><div class="panel">' + weightChart() + '</div></section>';
+    h += '<section class="sec"><div class="sechead"><h2>Heart-rate zones</h2><span class="small">Max 203 bpm</span></div><div class="panel"><div class="zones" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><div class="scroll" style="margin-top:8px"><table class="tv"><thead><tr><th>Zone</th><th>bpm</th><th>Used for</th></tr></thead><tbody>' +
+      HR_ZONES.map(z => '<tr><td>' + z.z + '</td><td>' + (z.lo ? z.lo + '–' + z.hi : 'Under ' + (z.hi + 1)) + '</td><td>' + z.use + '</td></tr>').join('') + '</tbody></table></div>' +
+      '<p class="small" style="margin-top:8px">Easy pace by phase, at the same heart rate as Hong Kong cools: ' + PHASES.slice(0, 4).map(p => p.name + ' ' + p.easy).join(', ') + ' per km.</p></div></section>';
+    h += '<section class="sec"><div class="sechead"><h2>Rules of the plan</h2></div><div class="panel"><ul class="prose">' + [
+      '<b>Heart rate is the rule; pace is the estimate.</b> Easy means under 165 bpm, even when that is 6:45/km. Since you moved to Hong Kong every run has sat at 185–197 bpm after the first mile, which is why none of them felt easy.',
+      '<b>Knee rule.</b> A faint ache that clears overnight is fine. Pain still there the next morning, or pain that changes how you run, turns the next run into a 40-minute incline walk. Two of those in one week: no running for five days, keep the gym and the walks.',
+      '<b>Missed sessions are gone.</b> Move a day ahead of time with Move in the Week view. If a session is missed anyway, skip it and carry on with the next one.',
+      '<b>Heat.</b> Late morning is the hottest time to run in October. Until mid-November carry water on every run, take long runs to shaded Bowen Road, and go by heart rate: above 28°C expect easy pace to sit 15–20 seconds per km slower. From late November, mornings are ideal.',
+      '<b>Legs in the gym.</b> Squats on Monday and deadlifts on Wednesday keep both at least 48 hours ahead of the Friday long run. If you move the long run earlier, drop the deadlifts that week.',
+      '<b>Check-up.</b> Book a basic check-up before the half and mention that your heart rate runs near 200 at full effort.',
+    ].map(x => '<li>' + x + '</li>').join('') + '</ul></div></section>';
+    h += '<section class="sec"><div class="sechead"><h2>Entering a race</h2></div><div class="panel prose"><p>The plan ends with a solo half on Sunday 31 January along the harbourfront. If you would rather pin on a number, these halves were listed on hkjogging.com on 28 September 2026:</p><ul class="prose">' +
+      '<li>Garmin Run Hong Kong, 21K at Sha Tin, 20 December 2026: registration open until 31 October.</li><li>Tai Po Half Marathon, 27 December 2026: registration open.</li><li>China Coast Marathon and Half Marathon, 10 January 2027: announced.</li><li>Standard Chartered Hong Kong Marathon half, 17 January 2027: registration closed.</li></ul>' +
+      '<p>A December race would mean running it as an easy long run, since the plan reaches 16 km by 18 December. For a race later than 31 January, repeat week 15 until race week, then run week 16. Check the calendar for February and March races as they are announced.</p><p><a class="link" href="https://hkjogging.com/races/" target="_blank" rel="noopener">Hong Kong race calendar' + icon('ext') + '</a></p></div></section>';
+    h += '<section class="sec"><div class="sechead"><h2>Your progress</h2></div><div class="panel" style="display:flex;flex-direction:column;gap:10px"><p class="muted">Save ticks, moved days, weigh-ins and start times to a file, or load them into another copy of this tracker.</p><div class="btnrow"><button type="button" class="btn" data-act="backup">' + icon('down') + 'Back up to a file</button><label class="btn" for="restore-file" style="cursor:pointer">Restore from a file</label><input id="restore-file" type="file" accept=".json,application/json" hidden></div></div></section>';
+    h += '<p class="small">' + (S.sync === 'cloud' ? 'Ticks, moved days, weigh-ins and start times are saved to this page and appear on any device you open it on.' : 'Ticks, moved days and weigh-ins are saved in this browser only.') + ' Shopping-list ticks stay on this device.</p>';
+    return h;
+  }
+
+  /* ---------- sheets ---------- */
+  function sheetCal() {
+    const m = S.calMonth, y = +m.slice(0, 4), mo = +m.slice(5, 7) - 1, first = new Date(y, mo, 1), lead = (first.getDay() + 6) % 7, days = new Date(y, mo + 1, 0).getDate(), t = realToday();
+    const selWeek = S.tab === 'week' ? S.wk : null;
+    let h = '<div class="shead"><h2>' + MON_LONG[mo] + ' ' + y + '</h2><div class="navbtns"><button type="button" class="ib" data-act="calShift" data-n="-1" aria-label="Previous month">' + icon('left') + '</button><button type="button" class="ib" data-act="calShift" data-n="1" aria-label="Next month">' + icon('right') + '</button><button type="button" class="ib" data-act="close" aria-label="Close">' + icon('x') + '</button></div></div><div class="cal">' +
+      ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(x => '<span class="h">' + x + '</span>').join('');
+    for (let i = 0; i < lead; i++) h += '<span></span>';
+    for (let d = 1; d <= days; d++) {
+      const ds = y + '-' + pad(mo + 1) + '-' + pad(d), list = sessionsFor(ds);
+      const on = selWeek ? mondayOf(ds) === selWeek : ds === S.sel;
+      h += '<button type="button" data-act="calPick" data-d="' + ds + '" aria-pressed="' + on + '" class="' + (list ? 'in' : 'off') + (ds === t ? ' today' : '') + '" aria-label="' + fmtShort(ds) + '">' + d + '<span class="marks">' + (list ? typeMarks(list) : '') + '</span></button>';
+    }
+    h += '</div><div class="legend" style="margin:0"><span><i style="background:var(--run);width:8px;height:8px;border-radius:50%"></i>Run</span><span><i style="background:var(--gym);width:8px;height:8px;border-radius:50%"></i>Gym</span><span><i style="background:var(--walk);width:8px;height:8px;border-radius:50%"></i>Incline walk</span></div>' +
+      '<div class="btnrow"><button type="button" class="btn" data-act="calPick" data-d="' + t + '">Today</button><button type="button" class="btn" data-act="calPick" data-d="' + START + '">Week 1</button><button type="button" class="btn" data-act="calPick" data-d="' + END + '">Race day</button></div>';
+    return h;
+  }
+  function sheetExport() {
+    const n = weekOf(S.wk), T = S.user.times;
+    const row = (k, label) => '<label for="time-' + k + '">' + label + '</label><input id="time-' + k + '" type="time" data-time="' + k + '" value="' + T[k] + '">';
+    return '<div class="shead"><h2>Add to calendar</h2><button type="button" class="ib" data-act="close" aria-label="Close">' + icon('x') + '</button></div>' +
+      '<p class="muted">Every event carries the full session: distance, targets, warm-up, main set and cool-down. Times are Hong Kong time.</p>' +
+      '<p class="eyebrow">Start times</p><div class="times">' + row('gym', 'Gym days (Mon, Wed)') + row('run', 'Weekday runs') + row('long', 'Friday long run') + row('sat', 'Saturday, after class') + row('race', 'Half marathon') + '</div>' +
+      '<div class="btnrow">' + (n ? '<button type="button" class="btn primary" data-act="dl" data-scope="week">' + icon('down') + 'Week ' + n + ' (.ics)</button>' : '') + '<button type="button" class="btn" data-act="dl" data-scope="all">' + icon('down') + 'All 16 weeks (.ics)</button></div>' +
+      '<p class="small">The .ics file arrives inside a .zip, because that is the file type this page is allowed to save. Unzip it, then open the .ics on your phone, or in Google Calendar on a computer choose Settings, Import and export. For a single session, use the Add to Google Calendar link on its card. Moved days are exported where you moved them.</p>';
+  }
+  function renderSheet() {
+    const host = $('#sheetHost');
+    if (!S.sheet) { host.innerHTML = ''; return; }
+    host.innerHTML = '<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="' + (S.sheet === 'cal' ? 'Calendar' : 'Add to calendar') + '">' + (S.sheet === 'cal' ? sheetCal() : sheetExport()) + '</div></div>';
+  }
+
+  function render() {
+    renderWhere(); renderTabs();
+    $('#view').innerHTML = S.tab === 'week' ? viewWeek() : S.tab === 'food' ? viewFood() : S.tab === 'plan' ? viewPlan() : viewDay();
+    renderSheet();
+  }
+
+  /* ---------- actions ---------- */
+  function go(tab, top) { S.tab = tab; try { history.replaceState(null, '', '#' + tab); } catch (e) { /* ignore */ } render(); if (top) window.scrollTo(0, 0); }
+  function selectDate(d) { S.sel = d; S.wk = mondayOf(d); }
+  function plainDownload(filename, text, type) {
+    const url = URL.createObjectURL(new Blob([text], { type: type }));
+    const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+  async function backup() {
+    const text = JSON.stringify({ app: 'road-to-21.1', saved: realToday(), user: S.user }, null, 1), name = 'road-to-21.1-progress-' + realToday() + '.json';
+    let dl = null;
+    try { if (window.claude && window.claude.use) dl = await window.claude.use('downloads'); } catch (e) { dl = null; }
+    if (dl) { try { await dl.save({ filename: name, data: text }); toast('Progress saved to a file.'); } catch (e) { toast(e && e.code === 'declined' ? 'Save cancelled.' : 'This view could not save the file.'); } return; }
+    if (!window.claude) { plainDownload(name, text, 'application/json'); toast('Progress saved to a file.'); return; }
+    toast('Saving files is not available in this view.');
+  }
+  function restore(file) {
+    const rd = new FileReader();
+    rd.onload = function () {
+      try {
+        const o = JSON.parse(rd.result), u = sanitize(o && o.user ? o.user : o);
+        if (!hasData(u)) { toast('That file has no progress in it.'); return; }
+        S.user = u; save(); render(); toast('Progress restored.');
+      } catch (e) { toast('That file is not a Road to 21.1 backup.'); }
+    };
+    rd.readAsText(file);
+  }
+  async function download(scope) {
+    const days = [];
+    if (scope === 'week') for (let i = 0; i < 7; i++) days.push(addDays(S.wk, i)); else for (let d = START; d <= END; d = addDays(d, 1)) days.push(d);
+    const ics = buildIcs(days.map(d => ({ date: d, list: sessionsFor(d) })), S.user.times, 'Road to 21.1');
+    const name = scope === 'week' ? 'road-to-21.1-week-' + weekOf(S.wk) : 'road-to-21.1-all-weeks';
+    let dl = null;
+    try { if (window.claude && window.claude.use) dl = await window.claude.use('downloads'); } catch (e) { dl = null; }
+    if (!dl && !window.claude) { plainDownload(name + '.ics', ics, 'text/calendar'); toast('Calendar file saved. Open it to add the sessions.'); return; }
+    if (!dl) { toast('Saving files is not available in this view. Use the Add to Google Calendar link on each session.'); return; }
+    try { await dl.save({ filename: name + '.zip', data: zipStore(name + '.ics', new TextEncoder().encode(ics)) }); toast('Saved. Unzip it, then open the .ics file.'); }
+    catch (e) { const c = e && e.code; toast(c === 'declined' ? 'Download cancelled.' : c === 'rate_limited' ? 'A save prompt is already open.' : 'This view could not save the file.'); }
+  }
+  document.addEventListener('click', function (e) {
+    const el = e.target.closest('[data-act]'); if (!el) return;
+    const a = el.dataset.act, d = el.dataset.d;
+    if (a === 'scrim') { if (e.target === el) { S.sheet = null; renderSheet(); } return; }
+    switch (a) {
+      case 'tab': S.swap = null; go(el.dataset.tab, true); break;
+      case 'pickDay': selectDate(d); render(); break;
+      case 'goto': S.swap = null; selectDate(d); go('today', true); break;
+      case 'shiftDay': selectDate(addDays(S.sel, +el.dataset.n)); render(); break;
+      case 'shiftWeek': S.swap = null; S.wk = addDays(S.wk, 7 * +el.dataset.n); S.sel = S.wk; render(); break;
+      case 'thisWeek': S.swap = null; selectDate(realToday()); render(); break;
+      case 'cal': S.calMonth = (S.tab === 'week' ? S.wk : S.sel).slice(0, 7); S.sheet = 'cal'; renderSheet(); break;
+      case 'calShift': { const dt = new Date(+S.calMonth.slice(0, 4), +S.calMonth.slice(5, 7) - 1 + +el.dataset.n, 1); S.calMonth = toYmd(dt).slice(0, 7); renderSheet(); break; }
+      case 'calPick': S.sheet = null; S.swap = null; selectDate(d); render(); break;
+      case 'close': S.sheet = null; renderSheet(); break;
+      case 'done': { const id = el.dataset.id; if (S.user.done[id]) delete S.user.done[id]; else S.user.done[id] = true; save(); render(); break; }
+      case 'swapFrom': if (!sessionsFor(d)) break; S.swap = d; S.wk = mondayOf(d); go('week', S.tab !== 'week'); break;
+      case 'swapTo': { const from = S.swap; S.swap = null; swapDays(from, d); save(); render(); toast('Swapped ' + DOW_LONG[fromYmd(from).getDay()] + ' and ' + DOW_LONG[fromYmd(d).getDay()] + '.'); break; }
+      case 'swapCancel': S.swap = null; render(); break;
+      case 'resetWeek': for (let i = 0; i < 7; i++) delete S.user.src[addDays(S.wk, i)]; save(); render(); toast('Week restored to the original order.'); break;
+      case 'export': S.sheet = 'export'; renderSheet(); break;
+      case 'dl': download(el.dataset.scope); break;
+      case 'food': S.food = el.dataset.f; render(); break;
+      case 'clearWeight': delete S.user.weights[S.sel]; save(); render(); break;
+      case 'backup': backup(); break;
+      case 'clearTicks': S.ticks = {}; try { localStorage.removeItem(LS_TICKS); } catch (er) { /* ignore */ } render(); break;
+    }
+  });
+  document.addEventListener('submit', function (e) {
+    const f = e.target.closest('[data-form="weigh"]'); if (!f) return;
+    e.preventDefault();
+    const v = parseFloat(f.querySelector('input').value);
+    if (!(v > 30 && v < 200)) { toast('Enter a weight in kilograms, for example 72.4.'); return; }
+    S.user.weights[S.sel] = Math.round(v * 10) / 10; save(); render(); toast('Saved ' + S.user.weights[S.sel].toFixed(1) + ' kg for ' + fmtShort(S.sel) + '.');
+  });
+  document.addEventListener('change', function (e) {
+    const el = e.target;
+    if (el.id === 'restore-file' && el.files && el.files[0]) { restore(el.files[0]); el.value = ''; return; }
+    if (el.dataset && el.dataset.tick) { if (el.checked) S.ticks[el.dataset.tick] = 1; else delete S.ticks[el.dataset.tick]; try { localStorage.setItem(LS_TICKS, JSON.stringify(S.ticks)); } catch (er) { /* ignore */ } }
+    else if (el.dataset && el.dataset.time && /^\d\d:\d\d$/.test(el.value)) { S.user.times[el.dataset.time] = el.value; save(); if (S.tab === 'today') $('#view').innerHTML = viewDay(); }
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && S.sheet) { S.sheet = null; renderSheet(); } });
+  /* chart tooltips */
+  const tip = $('#tip');
+  function showTip(el, x, y) {
+    tip.textContent = ''; const b = document.createElement('b'); b.textContent = el.dataset.tip; tip.appendChild(b); tip.appendChild(document.createTextNode(el.dataset.tip2 || ''));
+    tip.hidden = false;
+    const r = tip.getBoundingClientRect(), vw = document.documentElement.clientWidth;
+    tip.style.left = Math.max(8, Math.min(vw - r.width - 8, x - r.width / 2)) + 'px'; tip.style.top = Math.max(8, y - r.height - 12) + 'px';
+  }
+  document.addEventListener('pointermove', function (e) { const el = e.target.closest && e.target.closest('[data-tip]'); if (el) showTip(el, e.clientX, e.clientY); else if (!tip.hidden) tip.hidden = true; });
+  document.addEventListener('focusin', function (e) { const el = e.target.closest && e.target.closest('[data-tip]'); if (el) { const r = el.getBoundingClientRect(); showTip(el, r.left + r.width / 2, r.top + 20); } });
+  document.addEventListener('focusout', function () { tip.hidden = true; });
+  window.addEventListener('scroll', function () { tip.hidden = true; }, { passive: true });
+
+  /* ---------- boot ---------- */
+  loadLocal();
+  const hash = (location.hash || '').replace('#', '');
+  if (['today', 'week', 'food', 'plan'].indexOf(hash) >= 0) S.tab = hash;
+  render();
+  initCloud();
+  if (!window.claude && 'serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(function () { /* offline cache optional */ });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && !S.sheet) renderWhere(); });
+})();
+</script>
+</body></html>
