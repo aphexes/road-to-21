@@ -262,8 +262,8 @@ table.tv th { font: 600 11.5px/1.2 var(--display); letter-spacing: .08em; text-t
 <script>
 'use strict';
 /* ---------- Program data and pure helpers (no DOM) ---------- */
-const START = '2026-10-12';
-const WEEKS = 16;
+const START = '2026-11-02';
+const WEEKS = 15;
 const TZID = 'Asia/Hong_Kong';
 
 const pad = n => String(n).padStart(2, '0');
@@ -285,16 +285,16 @@ const fmtDM = s => { const d = fromYmd(s); return d.getDate() + ' ' + MON[d.getM
 const fmtRange = (a, b) => { const x = fromYmd(a), y = fromYmd(b); return x.getMonth() === y.getMonth() ? x.getDate() + '–' + y.getDate() + ' ' + MON[y.getMonth()] : fmtDM(a) + ' – ' + fmtDM(b); };
 
 const PHASES = [
-  { id: 'base', name: 'Base', from: 1, to: 3, easy: '6:20–7:00', long: '7 → 10 km',
-    focus: 'Build the habit: three, then four easy runs a week. Every run stays under 165 bpm, even when late-morning heat makes that feel slow.' },
-  { id: 'build', name: 'Build', from: 4, to: 7, easy: '6:00–6:30', long: '12 → 16 km',
-    focus: 'The long run grows to 10 miles. One steady session a week at half-marathon effort.' },
-  { id: 'speed', name: 'Speed', from: 8, to: 11, easy: '5:50–6:20', long: '12 → 16 km',
-    focus: '400 m and 1 km repeats bring back 4:30/km. 5K time trial on 25 December.' },
-  { id: 'half', name: 'Half build', from: 12, to: 15, easy: '5:45–6:15', long: '16 → 20 km',
+  { id: 'reentry', name: 'Re-entry', short: 'Re-entry', from: 1, to: 2, easy: '6:15–6:45', long: '9 → 10 km',
+    focus: 'Rebuild the routine after finals and travel: four easy runs and three gym sessions a week, every run under 165 bpm.' },
+  { id: 'build', name: 'Build', short: 'Build', from: 3, to: 6, easy: '6:00–6:30', long: '12 → 16 km',
+    focus: 'The long run grows to 10 miles by 11 December. One steady session a week at half-marathon effort.' },
+  { id: 'speed', name: 'Speed', short: 'Speed', from: 7, to: 10, easy: '5:50–6:20', long: '12 → 16 km',
+    focus: '400 m and 1 km repeats bring back 4:30/km. 5K time trial on 8 January.' },
+  { id: 'half', name: 'Half build', short: 'Half', from: 11, to: 14, easy: '5:45–6:15', long: '16 → 20 km',
     focus: 'The long run reaches 20 km. Tempo work at half-marathon pace, 5:20–5:30/km.' },
-  { id: 'taper', name: 'Taper and half', from: 16, to: 16, easy: '5:45–6:15', long: '21.1 km',
-    focus: 'Volume drops and the legs freshen, then 21.1 km on Sunday 31 January.' },
+  { id: 'taper', name: 'Taper and half', short: 'Taper', from: 15, to: 15, easy: '5:45–6:15', long: '21.1 km',
+    focus: 'Volume drops and the legs freshen, then a solo 21.1 km on Sunday 14 February.' },
 ];
 const phaseOf = n => PHASES.find(p => n >= p.from && n <= p.to) || null;
 
@@ -330,7 +330,7 @@ function longRun(km, p, o) {
   } else main.push(km + ' km easy with heart rate under 165');
   main.push('Walk 60 s whenever heart rate passes 172, then carry on');
   const notes = [o.hot
-    ? 'Route: Bowen Road while late mornings are still hot. It is flat, shaded and about 4 km end to end, so run it out and back. The harbourfront has almost no shade before noon.'
+    ? 'Route: Bowen Road while it is still warm. It is flat, shaded and about 4 km end to end, so run it out and back.'
     : 'Route: east along the harbourfront from Sun Yat Sen Memorial Park past Central Piers, Tamar and Wan Chai. Turn around at half distance. Bowen Road is the flat, shaded alternative.'];
   if (km >= 14) notes.push('Carry 500 mL Pocari Sweat and sip from 30 minutes in.');
   else if (km >= 10 || o.hot) notes.push('Carry water. Drink at the turnaround.');
@@ -360,20 +360,20 @@ const reps1k = (n, pace, total) => quality(n + ' × 1 km', total, Math.round(tot
 const tempo = (segs, total) => quality('Half-pace tempo', total, Math.round(total * 5.6) + 6,
   { pace: '5:20–5:30 /km', hr: '172–182 bpm', effort: 'Goal half-marathon pace: steady and controlled' },
   2, [segs, 'Lock into pace within the first 500 m and hold it'], 1.5,
-  ['This is rehearsal for 31 January. Practise the pace until it feels automatic.']);
+  ['This is rehearsal for the solo half. Practise the pace until it feels automatic.']);
 const hrCheck = n => ({ type: 'run', kind: 'test', title: 'Heart-rate check: 5 km at 5:00/km', km: 7.5, mins: 48,
   target: { pace: '5:00 /km, even', hr: 'Record the average', effort: 'Hold the pace exactly; the heart rate is the result' },
   blocks: [{ label: 'Warm-up', lines: WU_HARD(1.5) },
     { label: 'Main set', lines: ['5 km at exactly 5:00 /km (25:00)', 'Press lap at the start and end so the watch gives the average heart rate for the 5 km alone'] },
     { label: 'Cool-down', lines: ['1 km very easy jog', 'Write the average heart rate in your Strava note'] }],
-  notes: [n === 1 ? 'Baseline. Expect an average near 180–185 bpm today.' : 'Goal: an average of 178 bpm or lower, which puts 5:00/km in Zone 3.'], kcal: 540 });
+  notes: [n === 1 ? 'Baseline. On 31 October you held 5:50/km at 167–170 bpm, so expect an average near 178–185 today.' : 'Goal: an average of 178 bpm or lower, which puts 5:00/km in Zone 3.'], kcal: 540 });
 const timeTrial = () => ({ type: 'run', kind: 'test', title: '5K time trial', km: 8.5, mins: 52,
   target: { pace: '4:30–4:40 /km', hr: 'Climbs to 195+', effort: 'All you have, spread evenly' },
   blocks: [{ label: 'Warm-up', lines: WU_HARD(2) },
     { label: 'Main set', lines: ['5 km all-out on the promenade', 'First kilometre no faster than 4:35. On 10 October you opened at 4:28 and faded to 5:13', 'Kilometres 2–4 hold pace, then empty the tank in the last one'] },
     { label: 'Cool-down', lines: ['1.5 km very easy jog', 'Calves, hips and quads: 30 s each side'] }],
   notes: ['Target 23:00 or faster. Stretch target 22:30, which matches your best.', 'Have the top-up 30–60 minutes before. Nothing heavier.'], kcal: 612 });
-const race = () => ({ type: 'run', kind: 'race', title: 'Half marathon', km: 21.1, mins: 118,
+const race = () => ({ type: 'run', kind: 'race', title: 'Solo half marathon', km: 21.1, mins: 118,
   target: { pace: '5:20–5:35 /km for a 1:53–1:58 finish', hr: '170–180 bpm until 16 km', effort: 'Patient for 16 km, then race the last 5' },
   blocks: [{ label: 'Before', lines: ['Wake 2.5 hours early. Eat meal 1 (the oats, with banana), then sip 500 mL water', '10 min easy jog and 3 strides'] },
     { label: 'The run', lines: ['Kilometres 1–5 at 5:35 /km. It should feel too easy', 'Kilometres 6–16 at 5:25–5:30 /km', 'Kilometres 17–21.1: whatever is left', 'Pocari Sweat: a few mouthfuls every 20 minutes from 30 min in'] },
@@ -390,11 +390,12 @@ function push(n, o) {
   const main = [];
   if (!o.light) main.push(['Back squat', sqSets(n), sqLadder(n)]);
   main.push(['Bench press', '4 × 12', step(n, ['40', '42.5', '45', '47.5']) + ' kg']);
-  main.push(['Military press', '4 × 12', step(n, ['25', '27.5', '27.5', '30']) + ' kg']);
-  main.push(['Incline dumbbell bench press', '4 × 12', step(n, ['12.5', '15', '15', '17.5']) + ' kg each']);
-  main.push(['Lateral raise + cable chest fly', '4 × 12 superset', step(n, ['5 kg / 20 lb', '5 kg / 20 lb', '7.5 kg / 25 lb', '7.5 kg / 25 lb'])]);
-  main.push(['Seated dumbbell triceps extension', '4 × 12', step(n, ['15', '17.5', '17.5', '20']) + ' kg']);
+  main.push(['Military press', '4 × 12', step(n, ['20', '22.5', '25', '25']) + ' kg']);
+  main.push(['Incline dumbbell bench press', '4 × 12', step(n, ['10', '12.5', '12.5', '15']) + ' kg each']);
+  main.push(['Lateral raise + cable chest fly', '4 × 12 superset', step(n, ['7.5 kg / 6.25 kg', '7.5 kg / 6.25 kg', '7.5 kg / 7.5 kg', '10 kg / 7.5 kg'])]);
+  main.push(['Seated dumbbell triceps extension', '4 × 12', step(n, ['2 × 10', '2 × 10', '2 × 12.5', '2 × 12.5']) + ' kg']);
   const notes = [GYM_NOTE];
+  if (o.back) notes.unshift('Back after three weeks mostly away from the gym. Loads start where your 12 October session landed; keep 2 reps in reserve on every set this week and next.');
   if (o.light) notes.unshift('Race week: no squats, and stop every set 3 reps short.');
   else if (n >= 12) notes.unshift('Squat load holds through the half build. Keep the reps crisp.');
   return { type: 'gym', kind: 'push', title: 'Push', mins: o.light ? 45 : 60,
@@ -413,6 +414,7 @@ function pull(n, o) {
   main.push(['Barbell curl', '4 × 12', step(n, ['20', '20', '22.5', '22.5']) + ' kg']);
   const notes = [GYM_NOTE];
   if (o.noDead) notes.unshift(o.why || 'No deadlifts today.');
+  if (o.back) notes.unshift('Back after three weeks mostly away from the gym. Loads start where your 12 October session landed; keep 2 reps in reserve on every set this week and next.');
   return { type: 'gym', kind: 'pull', title: 'Pull', mins: o.noDead ? 50 : 60,
     target: { load: 'Last 2 reps of each set should be hard', effort: '60–90 s rest between sets' },
     blocks: [{ label: 'Warm-up', lines: ['5 min rower', '1 × 12 deadlift with the empty bar, 1 × 10 scapular pull-ups'] }, { label: 'Main set', lines: main }, { label: 'Cool-down', lines: ['Lats, hamstrings and forearms: 30 s each'] }],
@@ -452,40 +454,40 @@ const rest = (title, lines, notes) => ({ type: 'rest', kind: 'rest', title: titl
   target: null, blocks: [{ label: 'Today', lines: lines || ['No training', 'A 20–30 min easy walk is fine', 'Sleep is the session: aim for 8 hours'] }],
   notes: notes || ['Free Sunday? A hike fits here every week or two. If you hike, skip Saturday\u2019s short run that week and keep the pace social.'], kcal: 0 });
 
-/* ---------- the 16 weeks ---------- */
+/* ---------- the weeks ---------- */
 function buildWeek(n) {
   const p = phaseOf(n);
-  const W = n === 16 ? 30 : (n === 8 || n === 11) ? 50 : 40;
-  const d = { mon: [push(n), walk(W)], wed: [pull(n), walk(W)], sun: [rest()] };
-  const E = (km, o) => easyRun(km, p, o), L = (km, o) => longRun(km, p, Object.assign({ hot: n <= 6 }, o));
+  const W = n === 15 ? 30 : (n === 7 || n === 10) ? 50 : 40;
+  const back = n <= 2;
+  const d = { mon: [push(n, { back }), walk(W)], wed: [pull(n, { back }), walk(W)], sun: [rest()] };
+  const E = (km, o) => easyRun(km, p, o), L = (km, o) => longRun(km, p, Object.assign({ hot: n <= 2 }, o));
   const sat = km => [core(n), E(km, { title: 'Short easy run', notes: ['Run after the core session, or later in the day.'] })];
   switch (n) {
-    case 1: d.tue = [E(5, { notes: ['First run back after Saturday\u2019s hard 5K. Slow is the point.'] })]; d.thu = [E(5, { strides: 4 })]; d.fri = [L(7)]; d.sat = [core(n)]; break;
-    case 2: d.tue = [E(5, { strides: 4 })]; d.thu = [E(5)]; d.fri = [L(8.5)]; d.sat = sat(3); break;
-    case 3: d.tue = [E(6, { strides: 6 })]; d.thu = [E(5)]; d.fri = [L(10, { notes: ['Checkpoint: 10 km is back.'] })]; d.sat = sat(4); break;
-    case 4: d.tue = [steady('3 km steady at 170–180 bpm', 6.5, p)]; d.thu = [E(6)]; d.fri = [L(12)]; d.sat = sat(4); break;
-    case 5: d.tue = [steady('4 km steady at 170–180 bpm', 7.5, p)]; d.thu = [E(6)]; d.fri = [L(14)]; d.sat = sat(4); break;
-    case 6: d.tue = [hrCheck(1)]; d.thu = [E(5)]; d.fri = [L(11, { notes: ['Cutback week. Shorter on purpose so next Friday\u2019s 10 miles lands well.'] })]; d.sat = sat(4); break;
-    case 7: d.tue = [steady('2 × 3 km steady at 170–180 bpm, 2 min walk-jog between', 9.5, p)]; d.thu = [E(6)]; d.fri = [L(16.1, { title: 'Long run: 10 miles', notes: ['Checkpoint: 10 miles. Last December you ran this at 4:54/km; today is about finishing fresh.'] })]; d.sat = sat(4); break;
-    case 8: d.tue = [reps400(8)]; d.thu = [E(6)]; d.fri = [L(12)]; d.sat = sat(4); break;
-    case 9: d.tue = [reps1k(5, '4:35–4:40', 9.5)]; d.thu = [E(6, { strides: 4 })]; d.fri = [L(14, { finish: 3, finishAt: '5:30–5:45 /km (steady)' })]; d.sat = sat(5); break;
-    case 10: d.tue = [reps1k(6, '4:30–4:35', 10.5)]; d.thu = [E(6, { strides: 4 })]; d.fri = [L(16)]; d.sat = sat(5); break;
-    case 11: d.tue = [L(12, { title: 'Midweek long run', notes: ['Moved to Tuesday so Friday\u2019s time trial gets fresh legs.'] })]; d.thu = [E(5, { strides: 4, notes: ['Keep it short and easy. The time trial is tomorrow.'] })]; d.fri = [timeTrial()]; d.sat = sat(4); break;
-    case 12:
-      d.tue = [tempo('5 km at 5:20–5:30 /km', 8.5)];
+    case 1: d.tue = [E(5, { strides: 4, notes: ['First run of the reset. On 31 October your heart rate sat at 167–170 from the second kilometre; today the ceiling is 165, so slow down to stay under it.'] })]; d.thu = [E(5)]; d.fri = [L(9, { notes: ['You ran 10.1 km in Chengdu on 24 October, but the second half turned into a tempo run. Today the whole run stays easy.'] })]; d.sat = sat(3); break;
+    case 2: d.tue = [E(5, { strides: 6 })]; d.thu = [E(6)]; d.fri = [L(10, { notes: ['Checkpoint: 10 km in Hong Kong with heart rate under 165 the whole way.'] })]; d.sat = sat(4); break;
+    case 3: d.tue = [steady('3 km steady at 170–180 bpm', 6.5, p)]; d.thu = [E(6)]; d.fri = [L(12)]; d.sat = sat(4); break;
+    case 4: d.tue = [steady('4 km steady at 170–180 bpm', 7.5, p)]; d.thu = [E(6)]; d.fri = [L(14)]; d.sat = sat(4); break;
+    case 5: d.tue = [hrCheck(1)]; d.thu = [E(5)]; d.fri = [L(11, { notes: ['Cutback week. Shorter on purpose so next Friday’s 10 miles lands well.'] })]; d.sat = sat(4); break;
+    case 6: d.tue = [steady('2 × 3 km steady at 170–180 bpm, 2 min walk-jog between', 9.5, p)]; d.thu = [E(6)]; d.fri = [L(16.1, { title: 'Long run: 10 miles', notes: ['Checkpoint: 10 miles. Last December you ran this at 4:54/km; today is about finishing fresh.'] })]; d.sat = sat(4); break;
+    case 7: d.tue = [reps400(8)]; d.thu = [E(6)]; d.fri = [L(12)]; d.sat = sat(4); break;
+    case 8: d.tue = [reps1k(5, '4:35–4:40', 9.5)]; d.thu = [E(6, { strides: 4 })]; d.fri = [L(14, { finish: 3, finishAt: '5:30–5:45 /km (steady)', notes: ['Christmas Day. If Christmas Eve runs late, swap this with Thursday in the Week view.'] })]; d.sat = sat(5); break;
+    case 9:
+      d.tue = [reps1k(6, '4:30–4:35', 10.5)];
       d.wed = [pull(n, { noDead: true, why: 'No deadlifts: the long run is tomorrow.' }), walk(W)];
-      d.thu = [L(16, { notes: ['Thursday this week, so New Year\u2019s Day stays free.'] })];
-      d.fri = [rest('Rest day', ['New Year\u2019s Day: no training', 'A 20–30 min easy walk is fine'], ['The long run moved to Thursday. Sunday carries an extra easy run.'])];
+      d.thu = [L(16, { notes: ['Thursday this week, in the morning of New Year’s Eve, so the night and New Year’s Day stay free.'] })];
+      d.fri = [rest('Rest day', ['New Year’s Day: no training', 'A 20–30 min easy walk is fine'], ['The long run moved to Thursday. Sunday carries an extra easy run.'])];
       d.sat = sat(5); d.sun = [E(6, { notes: ['Replaces the usual Sunday rest, because Friday was off.'] })]; break;
-    case 13: d.tue = [tempo('3 × 2 km at 5:20–5:30 /km, 2 min walk-jog between', 10)]; d.thu = [E(6)]; d.fri = [L(18)]; d.sat = sat(5); break;
-    case 14: d.tue = [tempo('6 km at 5:20–5:30 /km', 9.5)]; d.thu = [E(7)]; d.fri = [L(20, { finish: 4, finishAt: '5:20–5:30 /km (half pace)', notes: ['Checkpoint: 20 km. The biggest run of the plan.', 'Practise race fuelling: Pocari every 20 minutes.'] })]; d.sat = sat(4); break;
-    case 15: d.tue = [hrCheck(2)]; d.thu = [E(6, { strides: 4 })]; d.fri = [L(12, { notes: ['Taper has started. Resist adding distance.'] })]; d.sat = sat(4); break;
-    case 16:
+    case 10: d.tue = [L(12, { title: 'Midweek long run', notes: ['Moved to Tuesday so Friday’s time trial gets fresh legs.'] })]; d.thu = [E(5, { strides: 4, notes: ['Keep it short and easy. The time trial is tomorrow.'] })]; d.fri = [timeTrial()]; d.sat = sat(4); break;
+    case 11: d.tue = [tempo('5 km at 5:20–5:30 /km', 8.5)]; d.thu = [E(6)]; d.fri = [L(16)]; d.sat = sat(5); break;
+    case 12: d.tue = [tempo('3 × 2 km at 5:20–5:30 /km, 2 min walk-jog between', 10)]; d.thu = [E(6)]; d.fri = [L(18)]; d.sat = sat(5); break;
+    case 13: d.tue = [tempo('6 km at 5:20–5:30 /km', 9.5)]; d.thu = [E(7)]; d.fri = [L(20, { finish: 4, finishAt: '5:20–5:30 /km (half pace)', notes: ['Checkpoint: 20 km. The biggest run of the plan.', 'Practise race fuelling: Pocari every 20 minutes.'] })]; d.sat = sat(4); break;
+    case 14: d.tue = [hrCheck(2)]; d.thu = [E(6, { strides: 4 })]; d.fri = [L(12, { notes: ['Taper has started. Resist adding distance, even over Lunar New Year.'] })]; d.sat = sat(4); break;
+    case 15:
       d.mon = [push(n, { light: true }), walk(W)];
       d.tue = [quality('Race-pace sharpener', 6.5, 40, { pace: '5:20–5:30 /km on the reps', hr: '172–182 bpm on the reps', effort: 'Smooth; finish wanting more' }, 2, ['3 × 1 km at 5:20–5:30 /km', '90 s walk-jog between reps'], 1, ['Last hard running before Sunday.'])];
       d.wed = [pull(n, { noDead: true, why: 'Race week: no deadlifts, and stop every set 3 reps short.' }), walk(W)];
       d.thu = [E(4, { strides: 4 })];
-      d.fri = [rest('Rest day', ['No training', 'Eat normally, with an extra half pack of noodles at dinner', 'Lay out kit, shoes and Pocari for Sunday'], ['Two days out. Rest is the work.'])];
+      d.fri = [rest('Rest day', ['No training', 'Eat normally, with an extra portion of rice at meal 2', 'Lay out kit, shoes and Pocari for Sunday'], ['Two days out. Rest is the work.'])];
       d.sat = [core(n, { light: true }), E(3, { title: 'Shakeout run', strides: 3, notes: ['Loosen the legs. Nothing more.'] })];
       d.sun = [race()]; break;
   }
@@ -507,14 +509,13 @@ const PROGRAM = {};
 const weekKm = n => { let t = 0; for (let i = 0; i < 7; i++) (PROGRAM[addDays(weekStart(n), i)] || []).forEach(s => { if (s.type === 'run') t += s.km; }); return Math.round(t * 10) / 10; };
 
 const BENCHMARKS = [
-  { date: '2026-10-23', label: '8.5 km without stopping', goal: 'Heart rate under 165 throughout' },
-  { date: '2026-10-30', label: '10 km long run', goal: 'Your first 10K since the March runs in Shanghai' },
-  { date: '2026-11-17', label: '5 km at 5:00/km: heart-rate check 1', goal: 'Baseline, likely 180–185 bpm' },
-  { date: '2026-11-27', label: '10 miles', goal: 'Finish feeling you could add 2 km' },
-  { date: '2026-12-25', label: '5K time trial', goal: '23:00 or faster; stretch 22:30' },
-  { date: '2027-01-15', label: '20 km long run', goal: 'Last 4 km at half pace' },
-  { date: '2027-01-19', label: '5 km at 5:00/km: heart-rate check 2', goal: 'Average 178 bpm or lower (Zone 3)' },
-  { date: '2027-01-31', label: 'Half marathon', goal: 'Under 1:58; stretch 1:53' },
+  { date: '2026-11-13', label: '10 km, all under 165 bpm', goal: 'Distance is back; this checks it is easy distance' },
+  { date: '2026-12-01', label: '5 km at 5:00/km: heart-rate check 1', goal: 'Baseline, likely 178–185 bpm' },
+  { date: '2026-12-11', label: '10 miles', goal: 'Finish feeling you could add 2 km' },
+  { date: '2027-01-08', label: '5K time trial', goal: '23:00 or faster; stretch 22:30' },
+  { date: '2027-01-29', label: '20 km long run', goal: 'Last 4 km at half pace' },
+  { date: '2027-02-02', label: '5 km at 5:00/km: heart-rate check 2', goal: 'Average 178 bpm or lower (Zone 3)' },
+  { date: '2027-02-14', label: 'Solo half marathon', goal: 'Under 1:58; stretch 1:53' },
 ];
 const WEIGHT_START = 72.5, WEIGHT_GOAL = 68.5;
 const weightTarget = date => { const t = Math.max(0, Math.min(1, diffDays(date, START) / diffDays(END, START))); return Math.round((WEIGHT_START + (WEIGHT_GOAL - WEIGHT_START) * t) * 10) / 10; };
@@ -543,7 +544,7 @@ const FOOD = {
   potato: [0.77, 0.02], pepperSauce: [30, 0.5], shrimp: [0.9, 0.18], riceStick: [3.6, 0.06], veg: [0.6, 0.03], oyster: [20, 0.5],
   tofuHard: [1.2, 0.12], peas: [0.8, 0.055], chiliBean: [25, 1], noodles: [3.5, 0.11], salmon: [2.0, 0.2], kimchi: [0.2, 0.01],
   tofuSilk: [0.55, 0.05], tuna185: [150, 33], broth: [0.05, 0.01], dumpling: [40, 1.6], spaghetti: [3.55, 0.13], creamCheese: [2.5, 0.06],
-  smoked: [1.2, 0.2], shake: [120, 24], ketchup: [20, 0.2], sugar: [16, 0], cabbage: [0.15, 0.012], free: [0, 0],
+  smoked: [1.2, 0.2], shake: [120, 24], ketchup: [20, 0.2], sugar: [16, 0], cabbage: [0.15, 0.012], free: [0, 0], rice: [1.3, 0.027],
 };
 /* items: [food, qty | [rest, training, big], text]. In text, {q} is the quantity. */
 const MEALS = {
@@ -557,16 +558,16 @@ const MEALS = {
     items: [['muffin', [3, 3, 4], '{q} Garden English Muffins, toasted'], ['creamCheese', [30, 40, 40], '{q} g Philadelphia Soft Cream Cheese'], ['smoked', [80, 100, 100], '{q} g smoked salmon'], ['egg', 3, '{q} eggs, scrambled'], ['milk', 250, '{q} mL Kowloon Dairy Slimilk'], ['banana', [0, 1, 1], '{q} banana']] },
   yakiUdon: { name: 'Soy-ginger chicken yaki udon', mins: 15, how: 'Pan-fry the chicken in the canola oil, 5 min a side, and slice. Loosen the udon under hot water. Fry broccoli 2 min, add udon, chicken, soy and garlic, toss 2 min. Push aside, scramble the eggs in the gap, mix through, finish with sesame oil.',
     items: [['thigh', [220, 250, 250], '{q} g boneless chicken thigh, skin off (Select frozen Boneless Chicken Thighs, thawed overnight)'], ['udon', [1.5, 2, 2.5], '{q} packs Sau Tao Japanese Udon (200 g each)'], ['broccoli', 1, '{q} head broccoli, cut small'], ['egg', [1, 2, 2], '{q} eggs'], ['soy', 1, '{q} tbsp Lee Kum Kee Soy Sauce, 1 tsp Lee Kum Kee Freshly Minced Garlic, grated ginger if you have it'], ['oilT', 1, '{q} tbsp Mazola Canola Oil'], ['oilt', 1, '{q} tsp Amoy Blended Sesame Oil']] },
-  fishPotato: { name: 'Black pepper fish with potatoes and broccoli', mins: 15, how: 'Prick the potatoes and microwave 8–10 min, turning halfway. Pan-fry the fillets 3–4 min a side in the oil, spoon the sauce over for the last minute. Boil or microwave the broccoli 3 min.',
-    items: [['pangasius', 2, '{q} Simply Fish Frozen Pangasius Fillets (240 g each), thawed and patted dry'], ['potato', [350, 500, 650], '{q} g potatoes'], ['broccoli', 1, '{q} head broccoli'], ['pepperSauce', 2, '{q} tbsp Lee Kum Kee Black Pepper Sauce'], ['oilT', 1, '{q} tbsp Mazola Canola Oil']] },
-  shrimpNoodles: { name: 'Shrimp and egg rice-stick noodles', mins: 12, how: 'Soak the rice sticks in just-boiled water 5 min and drain. Scramble the eggs and tip out. Fry shrimp 2 min, add vegetables 2 min, then noodles, soy and oyster sauce. Fold the eggs back in.',
-    items: [['shrimp', 200, 'A {q} g pack Frozen Argentina Red Shrimp Meat, thawed'], ['egg', 3, '{q} eggs'], ['riceStick', [90, 120, 150], '{q} g Chewy Dried Rice Stick'], ['veg', 200, '{q} g Select Mixed Vegetable (frozen)'], ['soy', 1, '{q} tbsp soy sauce'], ['oyster', 1, '{q} tbsp Amoy Oyster Sauce'], ['oilT', 1.5, '{q} tbsp canola oil']] },
+  fishRice: { name: 'Black pepper fish with rice and broccoli', mins: 15, how: 'Rice in the pot (Tuesday): rinse 400 g rice, add 560 mL water, bring to the boil, lid on at the lowest heat for 15 min, then off the heat for 10 min with the lid on. That makes about 1 kg: tonight\u2019s portion, Wednesday\u2019s fried rice, and one portion frozen flat in a bag for Sunday. Pan-fry the fillets 3–4 min a side in the oil, spoon the sauce over for the last minute. Boil or microwave the broccoli 3 min.',
+    items: [['pangasius', 2, '{q} Simply Fish Frozen Pangasius Fillets (240 g each), thawed and patted dry'], ['rice', [250, 330, 410], '{q} g cooked rice'], ['broccoli', 1, '{q} head broccoli'], ['pepperSauce', 2, '{q} tbsp Lee Kum Kee Black Pepper Sauce'], ['oilT', 1, '{q} tbsp Mazola Canola Oil']] },
+  friedRice: { name: 'Shrimp and egg fried rice', mins: 12, how: 'Uses the rice cooked on Tuesday: cold rice fries best. Scramble the eggs and tip out. Fry shrimp 2 min, add vegetables 2 min, then the rice, soy and oyster sauce, pressing out lumps. Fold the eggs back in.',
+    items: [['shrimp', 200, 'A {q} g pack Frozen Argentina Red Shrimp Meat, thawed'], ['egg', 3, '{q} eggs'], ['rice', [220, 300, 380], '{q} g cold cooked rice'], ['veg', 200, '{q} g Select Mixed Vegetable (frozen)'], ['soy', 1, '{q} tbsp soy sauce'], ['oyster', 1, '{q} tbsp Amoy Oyster Sauce'], ['oilT', 1.5, '{q} tbsp canola oil']] },
   tofuNoodles: { name: 'Chili-bean tofu and egg noodles', mins: 12, how: 'Boil the noodles 4–5 min. Meanwhile fry garlic and chili bean sauce 30 s, add tofu, peas and 100 mL water, simmer 5 min, stir in the eggs until just set. Spoon over the drained noodles.',
     items: [['tofuHard', 340, 'A {q} g block Pak Fook Hard Beancurd, cubed'], ['egg', 2, '{q} eggs'], ['peas', 100, '{q} g Select Garden Peas (frozen)'], ['chiliBean', 1, '{q} tbsp Lee Kum Kee Chili Bean Sauce, 1 tsp minced garlic'], ['oilT', 1, '{q} tbsp canola oil'], ['noodles', [70, 100, 130], '{q} g Sau Tao Shanghai Noodle (dried)']] },
   salmonPotato: { name: 'Salmon steaks with potatoes and vegetables', mins: 15, how: 'Microwave the potatoes 8–10 min. Season the salmon and cook skin-side down 4 min in a dry non-stick pan, flip, 3 min more. Microwave the vegetables 3 min. Finish with soy and lemon.',
     items: [['salmon', 320, 'Both steaks from a {q} g pack of Frozen Norwegian Salmon Steak, thawed in the fridge'], ['potato', [250, 400, 550], '{q} g potatoes'], ['veg', 200, '{q} g Select Mixed Vegetable (frozen)'], ['soy', 1, '{q} tsp soy sauce, a squeeze of lemon, black pepper']] },
-  kimchiStew: { name: 'Kimchi, tuna and tofu stew with udon', mins: 12, how: 'One pot. Simmer kimchi in the broth 3 min, add tuna and spoonfuls of tofu for 4 min, then the udon and eggs for 3 min. Finish with sesame oil.',
-    items: [['kimchi', 150, '{q} g Jinmi Kimchi (Cabbage), chopped'], ['tofuSilk', 350, 'A {q} g pack Vitasoy San Sui Silken Tofu'], ['tuna185', 1, '{q} can Select Tuna Chunks in Brine (185 g), drained'], ['egg', 2, '{q} eggs'], ['udon', [1.5, 2, 2.5], '{q} packs Sau Tao Japanese Udon (200 g each)'], ['broth', 300, '{q} mL Swanson Clear Chicken Broth'], ['oilt', 1, '{q} tsp sesame oil']] },
+  kimchiStew: { name: 'Kimchi, tuna and tofu stew with rice', mins: 12, how: 'One pot. Simmer kimchi in the broth 3 min, add tuna and spoonfuls of tofu for 4 min, then crack in the eggs for 2 min. Finish with sesame oil and serve over the rice frozen on Tuesday (microwave 2–3 min with a splash of water).',
+    items: [['kimchi', 150, '{q} g Jinmi Kimchi (Cabbage), chopped'], ['tofuSilk', 350, 'A {q} g pack Vitasoy San Sui Silken Tofu'], ['tuna185', 1, '{q} can Select Tuna Chunks in Brine (185 g), drained'], ['egg', 2, '{q} eggs'], ['rice', [320, 380, 450], '{q} g cooked rice'], ['broth', 300, '{q} mL Swanson Clear Chicken Broth'], ['oilt', 1, '{q} tsp sesame oil']] },
   out: { name: 'Meal out', mins: 0, fixed: [[950, 40], [1050, 40], [1150, 40]], how: 'Saturday dinner is left open for friends. If you eat in, cook one of the back-up meals.',
     items: [['free', 1, 'Build the plate on lean protein with noodles or rice: Hainan chicken, wonton noodles, siu mei with the sauce on the side, sashimi or a poke bowl'], ['free', 1, 'Skip the deep-fried sides and the sweet drink']] },
   dumplingUdon: { name: 'Dumpling udon soup', mins: 12, how: 'One pot. Boil the broth, add dumplings for 5 min, then udon and cabbage for 3 min, then crack in the eggs for 2 min.',
@@ -599,13 +600,15 @@ function mealAt(m, ix, lessEggs) {
 const MENU = [
   ['oats', 'kimchiStew'],
   ['muffins', 'yakiUdon'],
-  ['oats', 'fishPotato'],
-  ['muffins', 'shrimpNoodles'],
+  ['oats', 'fishRice'],
+  ['muffins', 'friedRice'],
   ['oats', 'tofuNoodles'],
   ['yoghurt', 'salmonPotato'],
   ['salmonMuffins', 'out'],
 ];
-const BACKUPS = ['dumplingUdon', 'tunaSpaghetti', 'tomatoEgg'];
+MEALS.thighRice = { name: 'Soy-ginger chicken thigh, rice and broccoli', mins: 15, how: 'Pan-fry the thigh 5 min a side in the oil. Add soy and garlic, toss 1 min. Boil or microwave the broccoli 3 min. Serve over rice, fresh or from the freezer.',
+  items: [['thigh', [220, 250, 250], '{q} g boneless chicken thigh, skin off'], ['rice', [200, 280, 360], '{q} g cooked rice'], ['broccoli', 1, '{q} head broccoli'], ['egg', 1, '{q} fried egg on top'], ['soy', 1, '{q} tbsp soy sauce, 1 tsp minced garlic'], ['oilT', 1, '{q} tbsp canola oil'], ['oilt', 1, '{q} tsp sesame oil']] };
+const BACKUPS = ['thighRice', 'dumplingUdon', 'tunaSpaghetti', 'tomatoEgg'];
 const SLOT_NAMES = ['Meal 1 · straight after training', 'Meal 2 · by 20:00'];
 function dayMeals(date, list) {
   const ix = TIER_IX[dayTier(list)], menu = MENU[fromYmd(date).getDay()];
@@ -632,7 +635,7 @@ const GROCERY_WEEKLY = [
   { g: 'Fish', name: 'Simply Fish Frozen Pangasius Fillet', pack: '240 g', qty: 2, price: 17.9, deal: 'Buy 2 to save $7.80', use: 'Tuesday dinner' },
   { g: 'Fish', name: 'Frozen Argentina Red Shrimp Meat', pack: '200 g', qty: 1, price: 39.9, use: 'Wednesday noodles' },
   { g: 'Fruit and veg', name: 'Del Monte Philippine Bananas', pack: '$16.90 per pound', qty: 1, price: null, use: 'About 9 for the week, roughly 3 pounds' },
-  { g: 'Fruit and veg', name: 'Potatoes', pack: 'Per pack', qty: 2, price: 9.9, use: 'About 1 kg for Tuesday and Friday. Check the pack weight' },
+  { g: 'Fruit and veg', name: 'Potatoes', pack: 'Per pack', qty: 1, price: 9.9, use: 'About 400 g for Friday. Check the pack weight' },
   { g: 'Fruit and veg', name: 'Broccoli', pack: 'Each', qty: 2, price: 6.9, use: 'Monday and Tuesday dinners' },
   { g: 'Fruit and veg', name: 'Tomatoes', pack: '1 lb pack', qty: 1, price: 9.9, use: 'Muffins' },
   { g: 'Fruit and veg', name: 'Lettuce', pack: '1 head', qty: 1, price: null, use: 'Muffins' },
@@ -642,8 +645,8 @@ const GROCERY_BULK = [
   { g: 'Freezer', name: 'Select Mixed Vegetable (frozen)', pack: '500 g', qty: 2, price: 28, deal: 'Buy 2 to save $12', use: '400 g a week', lasts: '2 weeks' },
   { g: 'Freezer', name: 'Select Garden Peas (frozen)', pack: '500 g', qty: 1, price: 28, use: '100 g a week', lasts: '5 weeks' },
   { g: 'Freezer', name: 'Select Cabbage and Pork Water Dumplings', pack: '540 g', qty: 1, price: 23, use: 'Back-up dinner', lasts: 'Use up the ones in your freezer first' },
-  { g: 'Noodles and grains', name: 'Sau Tao Japanese Udon', pack: '200 g × 4', qty: 2, price: 10, use: 'About 4 packs a week', lasts: '2 weeks; the vacuum packs keep for months' },
-  { g: 'Noodles and grains', name: 'Chewy Dried Rice Stick', pack: '280 g', qty: 1, price: 12, deal: 'Buy 2 to save $6', use: '120 g a week', lasts: '2 weeks' },
+  { g: 'Noodles and grains', name: 'Imperial Banquet Premium Thai Fragrant Rice', pack: '2 kg', qty: 1, price: 36, use: 'One 400 g pot a week, cooked on Tuesday', lasts: '5 weeks' },
+  { g: 'Noodles and grains', name: 'Sau Tao Japanese Udon', pack: '200 g × 4', qty: 1, price: 10, use: '2 packs a week for Monday\u2019s yaki udon', lasts: '2 weeks; the vacuum packs keep for months' },
   { g: 'Noodles and grains', name: 'Sau Tao Shanghai Noodle', pack: '340 g', qty: 1, price: 7, deal: 'Buy 2 to save $3.50', use: '100 g a week, plus back-ups', lasts: '3 weeks' },
   { g: 'Noodles and grains', name: 'Select Spaghetti', pack: '500 g', qty: 1, price: 16.9, use: 'Back-up dinner', lasts: 'A month or more' },
   { g: 'Noodles and grains', name: 'Select Whole Rolled Oats', pack: '1 kg', qty: 1, price: 26, use: 'About 450 g a week', lasts: '2 weeks' },
@@ -891,7 +894,7 @@ if (typeof module !== 'undefined') module.exports = { START, END, WEEKS, PROGRAM
   function outside(d) {
     const before = d < START;
     return '<div class="panel empty"><p class="eyebrow">' + (before ? 'Before the program' : 'After the program') + '</p>' +
-      '<p>The 16 weeks run from ' + fmtShort(START) + ' 2026 to ' + fmtShort(END) + ' 2027.</p>' +
+      '<p>The ' + WEEKS + ' weeks run from ' + fmtShort(START) + ' 2026 to ' + fmtShort(END) + ' 2027.</p>' +
       '<button type="button" class="btn primary" data-act="goto" data-d="' + (before ? START : END) + '">' + (before ? 'Go to week 1' : 'Go to the final week') + '</button></div>';
   }
 
@@ -961,7 +964,7 @@ if (typeof module !== 'undefined') module.exports = { START, END, WEEKS, PROGRAM
     const d = S.sel, t = realToday(), n = weekOf(d), list = sessionsFor(d);
     const rel = d === t ? 'Today' : d === addDays(t, 1) ? 'Tomorrow' : d === addDays(t, -1) ? 'Yesterday' : '';
     const dt = fromYmd(d);
-    let h = '<div class="daynav"><div><p class="eyebrow">' + (rel ? rel + ' · ' : '') + (n ? 'Week ' + n + ' of 16 · ' + phaseOf(n).name : dt.getFullYear()) + '</p><h1>' + DOW_LONG[dt.getDay()] + ' ' + dt.getDate() + ' ' + MON[dt.getMonth()] + '</h1></div>' +
+    let h = '<div class="daynav"><div><p class="eyebrow">' + (rel ? rel + ' · ' : '') + (n ? 'Week ' + n + ' of ' + WEEKS + ' · ' + phaseOf(n).name : dt.getFullYear()) + '</p><h1>' + DOW_LONG[dt.getDay()] + ' ' + dt.getDate() + ' ' + MON[dt.getMonth()] + '</h1></div>' +
       '<div class="navbtns"><button type="button" class="ib" data-act="shiftDay" data-n="-1" aria-label="Previous day">' + icon('left') + '</button><button type="button" class="ib" data-act="shiftDay" data-n="1" aria-label="Next day">' + icon('right') + '</button><button type="button" class="ib" data-act="cal" aria-label="Pick a date">' + icon('cal') + '</button></div></div>';
     h += strip(d);
     if (d !== t) h += '<div><button type="button" class="pill" data-act="goto" data-d="' + t + '">' + icon('left') + 'Back to today</button></div>';
@@ -981,7 +984,7 @@ if (typeof module !== 'undefined') module.exports = { START, END, WEEKS, PROGRAM
 
   function viewWeek() {
     const w = S.wk, n = weekOf(w), t = realToday();
-    let h = '<div class="daynav"><div><p class="eyebrow">' + (n ? 'Week ' + n + ' of 16 · ' + phaseOf(n).name : 'Outside the program') + '</p><h1>' + fmtRange(w, addDays(w, 6)) + '</h1></div>' +
+    let h = '<div class="daynav"><div><p class="eyebrow">' + (n ? 'Week ' + n + ' of ' + WEEKS + ' · ' + phaseOf(n).name : 'Outside the program') + '</p><h1>' + fmtRange(w, addDays(w, 6)) + '</h1></div>' +
       '<div class="navbtns"><button type="button" class="ib" data-act="shiftWeek" data-n="-1" aria-label="Previous week">' + icon('left') + '</button><button type="button" class="ib" data-act="shiftWeek" data-n="1" aria-label="Next week">' + icon('right') + '</button><button type="button" class="ib" data-act="cal" aria-label="Pick a week">' + icon('cal') + '</button></div></div>';
     if (w !== mondayOf(t)) h += '<div><button type="button" class="pill" data-act="thisWeek">' + icon('left') + 'Back to this week</button></div>';
     if (!n) return h + outside(w);
@@ -1016,7 +1019,7 @@ if (typeof module !== 'undefined') module.exports = { START, END, WEEKS, PROGRAM
       ms.forEach(m => { h += mealCard(m, m.slot); });
       h += '<section class="sec"><div class="sechead"><h2>Back-up meals</h2></div><p class="muted">Pantry dinners for when plans change, sized for ' + T.name.toLowerCase() + ' portions. Dumpling udon soup is the one for the day after a night out.</p>' +
         BACKUPS.map(id => mealCard(mealAt(MEALS[id], ix), 'Back-up')).join('') + '</section>';
-      h += '<p class="small">Calories and protein are estimates from standard food values, good to within about 10%. Protein stays near ' + T.p + ' g every day; noodles, potatoes, oats and muffins are what scale with training. No rice to cook anywhere in the plan.</p>';
+      h += '<p class="small">Calories and protein are estimates from standard food values, good to within about 10%. Protein stays near ' + T.p + ' g every day; rice, noodles, potatoes, oats and muffins are what scale with training. Rice is cooked once a week, on Tuesday, and covers three dinners.</p>';
     } else if (S.food === 'shop') {
       const sum = a => a.reduce((t, x) => t + (x.price ? x.price * x.qty : 0), 0);
       const sect = (key, title, sub, arr) => {
@@ -1061,7 +1064,7 @@ if (typeof module !== 'undefined') module.exports = { START, END, WEEKS, PROGRAM
       if (n === peak || n === cur) g += '<text class="lbl" x="' + cx + '" y="' + (y(km) - 5) + '" text-anchor="middle">' + km + '</text>';
       rows += '<tr><td>' + n + '</td><td>' + fmtRange(ws, addDays(ws, 6)) + '</td><td>' + phaseOf(n).name + '</td><td>' + km + '</td><td>' + dn + '</td></tr>';
     }
-    PHASES.forEach(p => { const x0 = L + band * (p.from - 1), x1 = L + band * p.to; g += '<line class="grid" x1="' + (x0 + 2) + '" x2="' + (x1 - 2) + '" y1="' + (H - 16) + '" y2="' + (H - 16) + '"/><text x="' + ((x0 + x1) / 2) + '" y="' + (H - 3) + '" text-anchor="middle">' + (p.id === 'taper' ? 'Taper' : p.name) + '</text>'; });
+    PHASES.forEach(p => { const x0 = L + band * (p.from - 1), x1 = L + band * p.to; g += '<line class="grid" x1="' + (x0 + 2) + '" x2="' + (x1 - 2) + '" y1="' + (H - 16) + '" y2="' + (H - 16) + '"/><text x="' + ((x0 + x1) / 2) + '" y="' + (H - 3) + '" text-anchor="middle">' + p.short + '</text>'; });
     return '<div class="legend"><span><i></i>Planned km</span><span><i class="dn"></i>Done</span></div><div class="chart"><svg viewBox="0 0 ' + Wd + ' ' + H + '" role="group" aria-label="Running distance by week">' + g + '</svg></div>' +
       '<details class="bd"><summary>Show as a table' + icon('right') + '</summary><div class="scroll"><table class="tv"><thead><tr><th>Week</th><th>Dates</th><th>Phase</th><th>Planned km</th><th>Done km</th></tr></thead><tbody>' + rows + '</tbody></table></div></details>';
   }
@@ -1073,7 +1076,7 @@ if (typeof module !== 'undefined') module.exports = { START, END, WEEKS, PROGRAM
     const x = v => L + Math.max(0, Math.min(1, v / span)) * pw, y = v => T + ph - (v - lo) / (hi - lo) * ph;
     let g = '';
     for (let v = lo; v <= hi; v++) g += '<line class="grid" x1="' + L + '" x2="' + (L + pw) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + '</text>';
-    [['2026-10-12', 'Oct'], ['2026-11-01', 'Nov'], ['2026-12-01', 'Dec'], ['2027-01-01', 'Jan']].forEach(m => { g += '<text x="' + x(diffDays(m[0], START)) + '" y="' + (H - 6) + '">' + m[1] + '</text>'; });
+    [['2026-11-02', 'Nov'], ['2026-12-01', 'Dec'], ['2027-01-01', 'Jan'], ['2027-02-01', 'Feb']].forEach(m => { g += '<text x="' + x(diffDays(m[0], START)) + '" y="' + (H - 6) + '">' + m[1] + '</text>'; });
     g += '<line x1="' + x(0) + '" y1="' + y(WEIGHT_START) + '" x2="' + x(span) + '" y2="' + y(WEIGHT_GOAL) + '" stroke="var(--ink-3)" stroke-width="2" stroke-linecap="round"/><text x="' + (x(span) + 6) + '" y="' + (y(WEIGHT_GOAL) + 4) + '">' + WEIGHT_GOAL + ' kg</text>';
     if (pts.length) {
       g += '<polyline fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="' + pts.map(p => x(p.x) + ',' + y(p.v)).join(' ') + '"/>';
@@ -1091,7 +1094,7 @@ if (typeof module !== 'undefined') module.exports = { START, END, WEEKS, PROGRAM
 
   function viewPlan() {
     const cur = weekOf(realToday());
-    let h = '<div class="daynav"><div><p class="eyebrow">' + fmtDM(START) + ' 2026 – ' + fmtDM(END) + ' 2027</p><h1>16 weeks to a half</h1></div></div>';
+    let h = '<div class="daynav"><div><p class="eyebrow">' + fmtDM(START) + ' 2026 – ' + fmtDM(END) + ' 2027</p><h1>' + WEEKS + ' weeks to a half</h1></div></div>';
     h += '<section class="sec"><div class="sechead"><h2>Phases</h2></div><div class="panel">' + PHASES.map((p, i) => {
       const a = weekStart(p.from), b = addDays(weekStart(p.to), 6), now = cur >= p.from && cur <= p.to;
       return '<div class="phase' + (now ? ' now' : '') + '"><span class="n">' + (i + 1) + '</span><h3>' + p.name + (now ? ' <span class="pill">Now</span>' : '') + '<span class="small">' + fmtRange(a, b) + ' · long run ' + p.long + '</span></h3><p>' + esc(p.focus) + '</p></div>';
@@ -1106,16 +1109,15 @@ if (typeof module !== 'undefined') module.exports = { START, END, WEEKS, PROGRAM
       HR_ZONES.map(z => '<tr><td>' + z.z + '</td><td>' + (z.lo ? z.lo + '–' + z.hi : 'Under ' + (z.hi + 1)) + '</td><td>' + z.use + '</td></tr>').join('') + '</tbody></table></div>' +
       '<p class="small" style="margin-top:8px">Easy pace by phase, at the same heart rate as Hong Kong cools: ' + PHASES.slice(0, 4).map(p => p.name + ' ' + p.easy).join(', ') + ' per km.</p></div></section>';
     h += '<section class="sec"><div class="sechead"><h2>Rules of the plan</h2></div><div class="panel"><ul class="prose">' + [
-      '<b>Heart rate is the rule; pace is the estimate.</b> Easy means under 165 bpm, even when that is 6:45/km. Since you moved to Hong Kong every run has sat at 185–197 bpm after the first mile, which is why none of them felt easy.',
+      '<b>Heart rate is the rule; pace is the estimate.</b> Easy means under 165 bpm, even when that is 6:45/km. In September your runs sat at 185–197 bpm; by late October the same kind of run sat at 155–170. Keeping easy runs under 165 is what keeps that number falling.',
       '<b>Knee rule.</b> A faint ache that clears overnight is fine. Pain still there the next morning, or pain that changes how you run, turns the next run into a 40-minute incline walk. Two of those in one week: no running for five days, keep the gym and the walks.',
       '<b>Missed sessions are gone.</b> Move a day ahead of time with Move in the Week view. If a session is missed anyway, skip it and carry on with the next one.',
-      '<b>Heat.</b> Late morning is the hottest time to run in October. Until mid-November carry water on every run, take long runs to shaded Bowen Road, and go by heart rate: above 28°C expect easy pace to sit 15–20 seconds per km slower. From late November, mornings are ideal.',
+      '<b>Heat.</b> Hong Kong cools from here, so easy pace will drop on its own at the same heart rate. In Chengdu at 17–19°C your easy heart rate was 140–150 at the same paces that cost 155–170 in Hong Kong at 25–27°C. On days above 26°C, go by heart rate and expect 15–20 seconds per km slower.',
       '<b>Legs in the gym.</b> Squats on Monday and deadlifts on Wednesday keep both at least 48 hours ahead of the Friday long run. If you move the long run earlier, drop the deadlifts that week.',
       '<b>Check-up.</b> Book a basic check-up before the half and mention that your heart rate runs near 200 at full effort.',
     ].map(x => '<li>' + x + '</li>').join('') + '</ul></div></section>';
-    h += '<section class="sec"><div class="sechead"><h2>Entering a race</h2></div><div class="panel prose"><p>The plan ends with a solo half on Sunday 31 January along the harbourfront. If you would rather pin on a number, these halves were listed on hkjogging.com on 28 September 2026:</p><ul class="prose">' +
-      '<li>Garmin Run Hong Kong, 21K at Sha Tin, 20 December 2026: registration open until 31 October.</li><li>Tai Po Half Marathon, 27 December 2026: registration open.</li><li>China Coast Marathon and Half Marathon, 10 January 2027: announced.</li><li>Standard Chartered Hong Kong Marathon half, 17 January 2027: registration closed.</li></ul>' +
-      '<p>A December race would mean running it as an easy long run, since the plan reaches 16 km by 18 December. For a race later than 31 January, repeat week 15 until race week, then run week 16. Check the calendar for February and March races as they are announced.</p><p><a class="link" href="https://hkjogging.com/races/" target="_blank" rel="noopener">Hong Kong race calendar' + icon('ext') + '</a></p></div></section>';
+    h += '<section class="sec"><div class="sechead"><h2>Entering a race</h2></div><div class="panel prose"><p>The plan ends with a solo half on ' + fmtShort(END) + ' along the harbourfront. There is no race deadline: once the solo half is done, pick a race and keep training with weeks 11–14 on repeat until race week, then run week 15.</p>' +
+      '<p><a class="link" href="https://hkjogging.com/races/" target="_blank" rel="noopener">Hong Kong race calendar' + icon('ext') + '</a></p></div></section>';
     h += '<section class="sec"><div class="sechead"><h2>Your progress</h2></div><div class="panel" style="display:flex;flex-direction:column;gap:10px"><p class="muted">Save ticks, moved days, weigh-ins and start times to a file, or load them into another copy of this tracker.</p><div class="btnrow"><button type="button" class="btn" data-act="backup">' + icon('down') + 'Back up to a file</button><label class="btn" for="restore-file" style="cursor:pointer">Restore from a file</label><input id="restore-file" type="file" accept=".json,application/json" hidden></div></div></section>';
     h += '<p class="small">' + (S.sync === 'cloud' ? 'Ticks, moved days, weigh-ins and start times are saved to this page and appear on any device you open it on.' : 'Ticks, moved days and weigh-ins are saved in this browser only.') + ' Shopping-list ticks stay on this device.</p>';
     return h;
@@ -1143,7 +1145,7 @@ if (typeof module !== 'undefined') module.exports = { START, END, WEEKS, PROGRAM
     return '<div class="shead"><h2>Add to calendar</h2><button type="button" class="ib" data-act="close" aria-label="Close">' + icon('x') + '</button></div>' +
       '<p class="muted">Every event carries the full session: distance, targets, warm-up, main set and cool-down. Times are Hong Kong time.</p>' +
       '<p class="eyebrow">Start times</p><div class="times">' + row('gym', 'Gym days (Mon, Wed)') + row('run', 'Weekday runs') + row('long', 'Friday long run') + row('sat', 'Saturday, after class') + row('race', 'Half marathon') + '</div>' +
-      '<div class="btnrow">' + (n ? '<button type="button" class="btn primary" data-act="dl" data-scope="week">' + icon('down') + 'Week ' + n + ' (.ics)</button>' : '') + '<button type="button" class="btn" data-act="dl" data-scope="all">' + icon('down') + 'All 16 weeks (.ics)</button></div>' +
+      '<div class="btnrow">' + (n ? '<button type="button" class="btn primary" data-act="dl" data-scope="week">' + icon('down') + 'Week ' + n + ' (.ics)</button>' : '') + '<button type="button" class="btn" data-act="dl" data-scope="all">' + icon('down') + 'All ' + WEEKS + ' weeks (.ics)</button></div>' +
       '<p class="small">The .ics file arrives inside a .zip, because that is the file type this page is allowed to save. Unzip it, then open the .ics on your phone, or in Google Calendar on a computer choose Settings, Import and export. For a single session, use the Add to Google Calendar link on its card. Moved days are exported where you moved them.</p>';
   }
   function renderSheet() {
